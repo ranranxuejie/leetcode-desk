@@ -2,7 +2,7 @@
 
 一个装在自己电脑上的刷题工具。4504 道题，代码在浏览器里直接跑，Hot 100 配了 AI 精讲。
 
-![今日](docs/screenshots/final-today.png)
+![今日](docs/screenshots/final-today.jpg)
 
 ## 为什么不用力扣网页刷
 
@@ -41,8 +41,8 @@ Key 存在 `%LOCALAPPDATA%\LeetCode训练台\deepseek.key`，只在本机，前�
 深色 / 浅色 / 跟随系统，设置里切，顶栏也有个按钮。侧栏能收成图标条，题面和代码区的分栏能拖，按 `?` 看全部快捷键。
 
 <table>
-<tr><td><img src="docs/screenshots/theme-light-problems.png" width="420"></td>
-<td><img src="docs/screenshots/theme-dark-select.png" width="420"></td></tr>
+<tr><td><img src="docs/screenshots/theme-light-problems.jpg" width="420"></td>
+<td><img src="docs/screenshots/theme-dark-select.jpg" width="420"></td></tr>
 </table>
 
 ## 数据从哪来
