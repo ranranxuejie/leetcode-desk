@@ -17,6 +17,15 @@ body,
   height: 100%;
 }
 
+/* 应用是固定视口的外壳：页面本身永远不滚，滚动只发生在 .main / .sidebar__nav 里。
+   不锁的话，任何 1px 的溢出（比如窗口最大化时客户端比工作区高一点）都会让整页滚动，
+   表现就是「侧边栏跟着动」。 */
+html,
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }

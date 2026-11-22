@@ -263,6 +263,9 @@ internal sealed class ShellForm : Form
     private const int HTLEFT = 10, HTRIGHT = 11, HTTOP = 12, HTTOPLEFT = 13, HTTOPRIGHT = 14;
     private const int HTBOTTOM = 15, HTBOTTOMLEFT = 16, HTBOTTOMRIGHT = 17, HTCAPTION = 2;
     private const int RESIZE_EDGE = 6;
+    private const int SM_CXSIZEFRAME = 32;
+    private const int SM_CYSIZEFRAME = 33;
+    private const int SM_CXPADDEDBORDER = 92;
 
     private readonly string _here;
     private readonly string _payload;
@@ -270,6 +273,9 @@ internal sealed class ShellForm : Form
     private bool _migrated;
     /// <summary>当前是不是浅色主题（窗口描边/底色要用；页面切换主题时会更新）</summary>
     private bool _light;
+    /// <summary>是否处于 F11 真全屏（客户区铺满整块屏幕）</summary>
+    private bool _fullscreen;
+    private Rectangle _restoreBounds;
 
     public ShellForm(string here, string payload)
     {
@@ -436,10 +442,67 @@ internal sealed class ShellForm : Form
             case "theme:dark":
                 ApplyThemeColors(false);
                 break;
+            case "fullscreen":
+                ToggleFullscreen();
+                break;
         }
     }
 
     // ---------------------------------------------------------------- 无边框的缩放 / 圆角
+
+    /// <summary>缩放边框（非客户区）厚度：SM_CXSIZEFRAME + SM_CXPADDEDBORDER</summary>
+    private int FrameWidth
+    {
+        get { return GetSystemMetrics(SM_CXSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER); }
+    }
+
+    private int FrameHeight
+    {
+        get { return GetSystemMetrics(SM_CYSIZEFRAME) + GetSystemMetrics(SM_CXPADDEDBORDER); }
+    }
+
+    /// <summary>
+    /// F11 真全屏：客户区铺满整块显示器（含任务栏区域）。
+    /// 最大化只到工作区（保留任务栏），两者不一样。
+    /// </summary>
+    private void ToggleFullscreen()
+    {
+        if (!_fullscreen)
+        {
+            _restoreBounds = Bounds;
+            if (WindowState != FormWindowState.Normal) WindowState = FormWindowState.Normal;
+            var screen = Screen.FromHandle(Handle);
+            var b = screen.Bounds;
+            // 同样要把边框厚度补上，否则四周会各留一条缝
+            Bounds = new Rectangle(
+                b.Left - FrameWidth,
+                b.Top - FrameHeight,
+                b.Width + FrameWidth * 2,
+                b.Height + FrameHeight * 2);
+            _fullscreen = true;
+        }
+        else
+        {
+            _fullscreen = false;
+            Bounds = _restoreBounds;
+        }
+        PostMaximizedState();
+    }
+
+    protected override void OnResize(EventArgs e)
+    {
+        base.OnResize(e);
+        // 最大化/还原时 DWM 的圆角要跟着关掉（全屏圆角会露出桌面）
+        try
+        {
+            int round = (WindowState == FormWindowState.Maximized || _fullscreen) ? 1 /* DWMWCP_DONOTROUND */ : 2;
+            DwmSetWindowAttribute(Handle, 33, ref round, sizeof(int));
+        }
+        catch
+        {
+            // 老系统忽略
+        }
+    }
 
     protected override CreateParams CreateParams
     {
@@ -479,13 +542,17 @@ internal sealed class ShellForm : Form
 
         if (m.Msg == WM_GETMINMAXINFO)
         {
-            // 无边框窗口最大化会盖住任务栏，这里夹回工作区
+            // 无边框窗口 + WS_THICKFRAME 时，窗口矩形包含一圈「缩放边框」（非客户区）。
+            // 直接把 ptMaxSize 设成工作区，客户区就比工作区小一圈 —— 表现就是最大化后
+            // 右侧和下侧各留一条缝。这里把边框厚度补进去，让**客户区**正好等于工作区。
             var info = (MINMAXINFO)Marshal.PtrToStructure(m.LParam, typeof(MINMAXINFO));
             var area = Screen.FromHandle(Handle).WorkingArea;
-            info.ptMaxPosition.X = area.Left;
-            info.ptMaxPosition.Y = area.Top;
-            info.ptMaxSize.X = area.Width;
-            info.ptMaxSize.Y = area.Height;
+            int fw = FrameWidth;
+            int fh = FrameHeight;
+            info.ptMaxPosition.X = area.Left - fw;
+            info.ptMaxPosition.Y = area.Top - fh;
+            info.ptMaxSize.X = area.Width + fw * 2;
+            info.ptMaxSize.Y = area.Height + fh * 2;
             Marshal.StructureToPtr(info, m.LParam, true);
         }
 
@@ -556,6 +623,9 @@ internal sealed class ShellForm : Form
         public POINT ptMinTrackSize;
         public POINT ptMaxTrackSize;
     }
+
+    [DllImport("user32.dll")]
+    private static extern int GetSystemMetrics(int index);
 
     [DllImport("user32.dll")]
     private static extern bool ReleaseCapture();

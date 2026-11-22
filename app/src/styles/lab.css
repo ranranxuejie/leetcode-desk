@@ -1268,3 +1268,15 @@
 .lab__edge[data-tone='soft'] .lab__edge-title {
   color: var(--accent-text-soft);
 }
+
+/* --------------------------------------------------------------------------
+   代码区选中
+   CodeMirror 自带基线主题会按 dark: true/false 给 .cm-selectionBackground 上色
+   （浅色 #d7d4f0 / 深色 #222），跟我们的令牌无关。这里用令牌覆盖掉，
+   深浅两套主题才会和正文选中保持一致。!important 是为了压过 CM 注入的 StyleModule。
+   -------------------------------------------------------------------------- */
+.cm-editor .cm-selectionBackground,
+.cm-editor.cm-focused .cm-selectionBackground,
+.cm-editor .cm-content ::selection {
+  background-color: var(--syn-selection) !important;
+}

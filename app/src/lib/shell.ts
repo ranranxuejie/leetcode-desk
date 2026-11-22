@@ -31,7 +31,7 @@ function bridge(): WebViewBridge | undefined {
 }
 
 /** 通知宿主：开始拖窗口 / 最小化 / 最大化 / 关闭 */
-export function shellAction(action: 'drag' | 'minimize' | 'maximize' | 'close'): void {
+export function shellAction(action: 'drag' | 'minimize' | 'maximize' | 'close' | 'fullscreen'): void {
   bridge()?.postMessage(action)
 }
 
@@ -41,6 +41,22 @@ export function shellAction(action: 'drag' | 'minimize' | 'maximize' | 'close'):
  */
 export function notifyShellTheme(theme: 'dark' | 'light'): void {
   bridge()?.postMessage(theme === 'light' ? 'theme:light' : 'theme:dark')
+}
+
+/**
+ * 装壳里的全局快捷键：F11 真全屏（客户区铺满整块屏幕，含任务栏区域）。
+ * WebView2 没有浏览器那一层，F11 不会自己生效，得我们自己转发给宿主。
+ * 返回卸载函数。
+ */
+export function installShellHotkeys(): () => void {
+  if (!inShell()) return () => {}
+  const handler = (event: KeyboardEvent) => {
+    if (event.key !== 'F11') return
+    event.preventDefault()
+    shellAction('fullscreen')
+  }
+  window.addEventListener('keydown', handler, true)
+  return () => window.removeEventListener('keydown', handler, true)
 }
 
 /** 监听宿主发来的状态（目前只有「是否已最大化」，用来换按钮图标） */

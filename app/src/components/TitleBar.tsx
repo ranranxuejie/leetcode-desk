@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Minus, Square, Copy, X } from 'lucide-react'
 import { cn } from '../lib/utils'
-import { onShellState, shellAction } from '../lib/shell'
+import { installShellHotkeys, onShellState, shellAction } from '../lib/shell'
 
 /** 路由 → 标题栏里显示的页面名（和侧边栏一致） */
 const PAGE_NAMES: Array<[RegExp, string]> = [
@@ -34,6 +34,8 @@ export function TitleBar() {
   const [maximized, setMaximized] = useState(false)
 
   useEffect(() => onShellState(setMaximized), [])
+  // F11 = 真全屏（含任务栏区域）；Esc 不接管，留给弹窗
+  useEffect(() => installShellHotkeys(), [])
 
   return (
     <div

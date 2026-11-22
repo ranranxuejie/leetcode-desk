@@ -784,9 +784,13 @@
 }
 
 /* 壳里给页面让出标题栏的高度；100dvh 减去 44 后内容区刚好铺满 */
+/* 用 padding 而不是 margin 让出标题栏高度：
+   margin-top 会穿过 #root 折叠到 body 上，把 body 撑高 44px，
+   于是整页多出一段可滚区域 —— 表现就是「滚轮一动，侧边栏跟着走」。
+   padding 不折叠，配合全局 box-sizing: border-box，内容区正好是 100dvh - 44。 */
 .app--shell {
-  height: calc(100dvh - 44px);
-  margin-top: 44px;
+  height: 100dvh;
+  padding-top: 44px;
 }
 
 .titlebar__brand {

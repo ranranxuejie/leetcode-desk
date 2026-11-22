@@ -63,6 +63,7 @@ import { nodeKinds, nodePrelude, wrapNodeCall } from '../lib/nodes'
 import { AiReview } from './AiReview'
 import { Splitter } from './Splitter'
 import { loadUiNumber, saveUiNumber } from '../lib/ui'
+import { useThemeState } from '../lib/theme'
 import { MOD_KEY } from '../lib/platform'
 import type { CSSProperties } from 'react'
 import { Terminal, TracePanel } from './Terminal'
@@ -90,7 +91,14 @@ export interface CodeLabHandle {
    所以令牌里单独给了 --fs-code（13px），不占用正文字号阶梯。
    ========================================================================== */
 
-const labTheme = EditorView.theme(
+/**
+ * CodeMirror 的 { dark } 标记决定它用哪套**基线主题**：
+ * dark 时注入 .ͼ3 .cm-selectionBackground { background: #222 }，
+ * 浅色界面下选区就会被涂成深灰（字都看不见）。
+ * 所以这里做成函数，主题切换时用 Compartment 重新配置。
+ */
+const labTheme = (dark: boolean) =>
+  EditorView.theme(
   {
     '&': {
       color: 'var(--text-1)',
@@ -196,7 +204,7 @@ const labTheme = EditorView.theme(
     },
     '.cm-placeholder': { color: 'var(--text-3)' },
   },
-  { dark: true },
+  { dark },
 )
 
 /** 语法色映射：只认 tokens.css 第 3.6 节那套 --syn-*，不用第三方主题原色 */
@@ -241,7 +249,8 @@ const labHighlight = HighlightStyle.define([
   { tag: t.link, color: 'var(--syn-keyword)', textDecoration: 'underline' },
 ])
 
-const labEditorTheme = [labTheme, syntaxHighlighting(labHighlight)]
+/** 静态部分（语法高亮不随主题变，颜色都走 var(--syn-*)） */
+const labStaticTheme = [syntaxHighlighting(labHighlight)]
 
 type LabTab = 'cases' | 'console' | 'terminal' | 'ai'
 
@@ -263,6 +272,9 @@ export const CodeLab = forwardRef<
 >(function CodeLab({ problem, onRun }, ref) {
   const progress = useProgress()
   const { toast } = useToast()
+  // 编辑器要知道当前是深色还是浅色：CodeMirror 的基线主题（选区底色等）跟着它走
+  const { resolved: resolvedTheme } = useThemeState()
+  const editorTheme = useMemo(() => labTheme(resolvedTheme === 'dark'), [resolvedTheme])
   const { byDoc } = useData()
   const state = progress.stateOf(problem.no)
 
@@ -1203,7 +1215,7 @@ export const CodeLab = forwardRef<
           value={code}
           height="100%"
           theme="none"
-          extensions={[python(), labEditorTheme]}
+          extensions={[python(), editorTheme, ...labStaticTheme]}
           basicSetup={{
             foldGutter: false,
             highlightActiveLine: true,
