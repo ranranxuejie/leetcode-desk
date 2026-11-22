@@ -26,7 +26,10 @@ npm install
 npm run dev        # http://127.0.0.1:5173
 ```
 
-> 仓库里没有编译好的 exe。克隆后先 `launcher\fetch-webview2.ps1` 拉依赖，再 `build.ps1` 编译桌面版；`app/public/data` 也要用 `python tools/build_web_data.py` 生成一次。
+> 克隆下来还不能直接跑，缺三样东西（都太大，没进仓库）：
+> - `launcher\fetch-webview2.ps1` 拉 WebView2 SDK，再 `build.ps1` 编译桌面版
+> - `python tools/fetch_full_bank.py` 抓题库缓存（`data/`，24MB）
+> - `python tools/build_web_data.py` 汇编前端数据（`app/public/data`）
 
 ## 配 AI 解析
 
