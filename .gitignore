@@ -53,3 +53,7 @@ data/*
 # 但「讲解正文」要进仓库：这是产品的内容本体，重新生成要花真金白银，而且不是确定性的
 !data/teachings/
 !data/analyses/
+
+# Clash 内核偶尔会在当前目录落一个运行期配置，别提交
+/config.yaml
+/config.json
