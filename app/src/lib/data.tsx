@@ -81,19 +81,23 @@ export function useStatement(problem: Problem): {
 }
 
 /**
- * Hot 100 的预生成深度讲解：整份 teachings.json 只取一次（约 600KB），
- * 之后按题号在内存里查。没标记 hasTeaching 的题不会触发请求。
+ * 预生成的讲解（长精讲 + 短解析）：按题号分片，和题面同一套规则（每片 50 题）。
+ *
+ * 以前只有 100 篇长精讲，整份 teachings.json 一次拉完（约 600KB）最省事；
+ * 现在要覆盖 4000+ 道题，单文件会到 5MB 量级，所以改成「打开哪道题就拉哪一片」。
+ * 没标记 hasTeaching 的题不会触发请求。
  */
-let teachingsTask: Promise<Record<string, string>> | null = null
+const teachingShardCache = new Map<number, Promise<Record<string, string>>>()
 
-function loadTeachings(): Promise<Record<string, string>> {
-  if (!teachingsTask) {
-    const base = import.meta.env.BASE_URL || '/'
-    teachingsTask = fetch(`${base}data/teachings.json`, { cache: 'no-store' })
-      .then((res) => (res.ok ? (res.json() as Promise<Record<string, string>>) : {}))
-      .catch(() => ({}))
-  }
-  return teachingsTask
+function loadTeachingShard(shard: number): Promise<Record<string, string>> {
+  const cached = teachingShardCache.get(shard)
+  if (cached) return cached
+  const base = import.meta.env.BASE_URL || '/'
+  const task = fetch(`${base}data/teachings/${shard}.json`, { cache: 'no-store' })
+    .then((res) => (res.ok ? (res.json() as Promise<Record<string, string>>) : {}))
+    .catch(() => ({}))
+  teachingShardCache.set(shard, task)
+  return task
 }
 
 export function useTeaching(problem: Problem): { teaching: string | null; loading: boolean } {
@@ -108,7 +112,7 @@ export function useTeaching(problem: Problem): { teaching: string | null; loadin
     }
     let alive = true
     setLoading(true)
-    void loadTeachings().then((map) => {
+    void loadTeachingShard(problem.shard).then((map) => {
       if (!alive) return
       setTeaching(map[problem.no] ?? null)
       setLoading(false)

@@ -20,6 +20,7 @@ import { RUN_LIMIT, useProgress } from '../lib/progress'
 import { useToast } from '../lib/toast'
 import { Markdown, StatementHtml } from '../lib/markdown'
 import { Tabs, Tip } from '../lib/motion'
+import { useTeaching } from '../lib/data'
 import { loadUiFlag, loadUiNumber, saveUiFlag, saveUiNumber } from '../lib/ui'
 import { MOD_KEY } from '../lib/platform'
 import { Splitter } from '../components/Splitter'
@@ -356,7 +357,10 @@ function ProblemWorkspace({
   const section = doc?.sections.find((s) => s.id === tutorialRef?.sectionId)
   const wrongCount = state.reviews.filter((r) => r.result === 'fail').length
 
-  // 全量题库里的题没有精讲，但「解析」tab 依然给（自动生成版），只有「精讲」需要真教程
+  // 预生成的讲解（长精讲 / 短解析）：有就单独开一个「精讲」tab
+  const { teaching, loading: teachingLoading } = useTeaching(problem)
+  const hasArticle = Boolean(teaching)
+  // 教程章节（手写讲义）和预生成文章都进「精讲」tab
   const hasTutorial = problem.tutorial.length > 0
   const tabItems: TabItem[] = [
     { key: 'statement', label: '题面' },
@@ -370,8 +374,14 @@ function ProblemWorkspace({
           ? 'AI'
           : undefined,
     },
-    ...(hasTutorial
-      ? [{ key: 'tutorial', label: '精讲', count: problem.tutorial.length } as TabItem]
+    ...(hasTutorial || hasArticle
+      ? [
+          {
+            key: 'tutorial',
+            label: '精讲',
+            count: hasTutorial ? problem.tutorial.length : 'AI',
+          } as TabItem,
+        ]
       : []),
     { key: 'notes', label: '我的笔记', count: state.note ? '·' : undefined },
   ]
@@ -731,7 +741,25 @@ function ProblemWorkspace({
 
           {tab === 'tutorial' ? (
             <div className="detail__section">
-              {problem.tutorial.length === 0 ? (
+              {problem.tutorial.length === 0 && hasArticle ? (
+                // 没有手写讲义、但有预生成的讲解：整篇文章直接放这里
+                <article className="an__teach">
+                  <div className="an__teach-head">
+                    <div>
+                      <span className="an__eyebrow">AI 精讲 · 读过题面</span>
+                      <h3 className="an__teach-title">{problem.title}</h3>
+                    </div>
+                    <span className="an__teach-meta">
+                      {teaching ? teaching.length.toLocaleString('zh-CN') : 0} 字 · DeepSeek 读题后生成
+                    </span>
+                  </div>
+                  <Markdown markdown={teaching ?? ''} className="an__teach-body" />
+                </article>
+              ) : teachingLoading ? (
+                <div className="notes-empty">
+                  <div className="notes-empty__title">正在载入精讲…</div>
+                </div>
+              ) : problem.tutorial.length === 0 ? (
                 <div className="notes-empty">
                   <div className="notes-empty__title">这道题还没有配套精讲</div>
                   先在代码台自己写一遍，再去题库里找同专题的题看讲解。
@@ -788,6 +816,21 @@ function ProblemWorkspace({
                   ) : (
                     <div className="notes-empty">精讲内容读取失败，请刷新页面。</div>
                   )}
+
+                  {hasArticle ? (
+                    <article className="an__teach" style={{ marginTop: 'var(--sp-7)' }}>
+                      <div className="an__teach-head">
+                        <div>
+                          <span className="an__eyebrow">AI 精讲 · 读过题面</span>
+                          <h3 className="an__teach-title">{problem.title}</h3>
+                        </div>
+                        <span className="an__teach-meta">
+                          {teaching ? teaching.length.toLocaleString('zh-CN') : 0} 字 · DeepSeek 读题后生成
+                        </span>
+                      </div>
+                      <Markdown markdown={teaching ?? ''} className="an__teach-body" />
+                    </article>
+                  ) : null}
                 </>
               )}
             </div>

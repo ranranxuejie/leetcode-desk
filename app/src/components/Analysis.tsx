@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Check, Copy, Eraser, Loader2, Sparkles } from 'lucide-react'
 import { Markdown } from '../lib/markdown'
 import { useToast } from '../lib/toast'
-import { useTeaching } from '../lib/data'
 import { useAiAnalysis } from '../lib/ai-analysis'
 import { Collapse, PlusMinus } from '../lib/motion'
 import { LEVEL_LABEL } from '../lib/utils'
@@ -83,8 +82,6 @@ export function Analysis({
 }) {
   const { toast } = useToast()
   const ai = useAiAnalysis(problem)
-  const { teaching } = useTeaching(problem)
-  const hasTeach = Boolean(teaching)
   const [copied, setCopied] = useState(false)
   // 折叠展开（手风琴）：默认全开；「参考答案」例外 —— 默认收起，先自己想再看
   const [folded, setFolded] = useState<Record<string, boolean>>({ reference: true })
@@ -103,14 +100,14 @@ export function Analysis({
    */
   const autoTried = useRef<Set<string>>(new Set())
   useEffect(() => {
-    if (!view.auto || hasTeach) return
+    if (!view.auto) return
     // 没有题面（会员题）就不自动生成：让模型凭空猜题意比不生成更糟
     if (!problem.statementHtml) return
     if (ai.text || ai.busy || ai.error) return
     if (autoTried.current.has(problem.no)) return
     autoTried.current.add(problem.no)
     ai.generate()
-  }, [view.auto, hasTeach, ai, problem.no, problem.statementHtml])
+  }, [view.auto, ai, problem.no, problem.statementHtml])
   // 只有 Key / 代理类错误才提示去改 .env.local；429、断网这些提示那句话只会误导人
   const keyIssue = ai.error ? /401|404|Key|DEEPSEEK|代理/.test(ai.error) : false
 
@@ -254,24 +251,6 @@ export function Analysis({
         </section>
       ) : null}
 
-      {/* ①.7 预生成的深度讲解（Hot 100）：读完题面再写的一整篇文章 */}
-      {hasTeach ? (
-        <section className="an__teach">
-          <div className="an__teach-head">
-            <div>
-              <span className="an__eyebrow">AI 精讲 · 读过题面</span>
-              <h3 className="an__teach-title">{problem.title}</h3>
-            </div>
-            <span className="an__teach-meta">
-              {teaching ? teaching.length.toLocaleString('zh-CN') : 0} 字 · DeepSeek 读题后生成
-            </span>
-          </div>
-          <Markdown markdown={teaching ?? ''} className="an__teach-body" />
-        </section>
-      ) : null}
-
-      {!hasTeach ? (
-        <>
       {/* ② 考什么 / 常见误区 */}
       <div className="an__pair">
         <section className="an__card">
@@ -366,8 +345,6 @@ export function Analysis({
             <Markdown markdown={view.interview.markdown} className="an__prose" />
           </Collapse>
         </section>
-      ) : null}
-        </>
       ) : null}
 
       {/* ④.5 相关题：同专题同难度，练完这道接着练 */}

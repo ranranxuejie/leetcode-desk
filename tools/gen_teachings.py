@@ -1,4 +1,4 @@
-"""给 Hot 100 生成「非常详细」的讲解（预生成，存成 markdown）。
+"""给 Hot 100 / 精选 352 生成「非常详细」的讲解（预生成，存成 markdown）。
 
 为什么要预生成：运行时的 AI 解析是 600 字速览，够用但不够「教」；
 Hot 100 是最值得反复读的一批题，所以让模型读完整题面后写一篇 2000-3000 字的详解，
@@ -9,8 +9,15 @@ Hot 100 是最值得反复读的一批题，所以让模型读完整题面后写
 
 用法：
     python tools/gen_teachings.py --limit 2        # 先试两道
-    python tools/gen_teachings.py                  # 生成全部缺的
+    python tools/gen_teachings.py                  # 生成全部缺的（Hot 100，默认行为不变）
     python tools/gen_teachings.py --workers 3
+    python tools/gen_teachings.py --scope selected # 扩到 data/master.json 的 352 道精选
+    python tools/gen_teachings.py --scope selected --limit 3 --workers 1
+
+--scope：
+    hot100   = data/lc_hot100.json（默认，和以前完全一样）
+    selected = data/master.json 里的 352 道（含 Hot 100；已有的文件照旧跳过）
+    两种 scope 都不改 prompt、输出目录和文件格式 —— 前端读的是同一个 teachings.json。
 """
 from __future__ import annotations
 
@@ -31,11 +38,14 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 OUT = DATA / "teachings"
 ENV = ROOT / "app" / ".env.local"
+MASTER = DATA / "master.json"
 
 API = "https://api.deepseek.com/chat/completions"
 MODEL = "deepseek-chat"
 MAX_TOKENS = 4096
 TIMEOUT = 240
+
+LEVEL_TO_CATALOG = {"简单": "EASY", "中等": "MEDIUM", "困难": "HARD"}
 
 SYSTEM = (
     "你是一位带过很多学员的算法面试教练。你写东西的原则是：讲清楚「为什么」，"
@@ -95,6 +105,7 @@ TEMPLATE = """## 题目
 - 不要大段复述题面原文（超过两句就算失败）
 - 代码必须是真代码，不许伪代码
 - 如果题面信息不足以确定题意，明确写出你的假设
+- 正文不许出现自我纠错 / 重算 / 改口的痕迹（“等等”“我上面写错了”“重新走一遍”这类）：例子和边界先在内部算完再落笔，一次写对
 """
 
 
@@ -204,14 +215,39 @@ def call_api(key: str, prompt: str, retries: int = 4) -> str:
     raise RuntimeError("重试次数用尽")
 
 
+def master_catalog_item(item: dict) -> dict:
+    """master.json 的一条拼成和 lc_catalog.json 同形状（只在 catalog 缺这道题时兜底）。
+
+    level 是中文（「中等」），要换成 lc_catalog 的英文枚举，否则 build_prompt 会一律
+    落到「中等」；ac_rate 是百分数（43.1），lc_catalog 是小数（0.4309），除 100 对齐。
+    """
+    return {
+        "no": str(item.get("no") or "").strip(),
+        "title": item.get("title") or "",
+        "level": LEVEL_TO_CATALOG.get(str(item.get("level") or "").strip(), "MEDIUM"),
+        "ac_rate": (item.get("ac_rate") or 0) / 100,
+        "tags": item.get("tags") or [],
+    }
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument(
+        "--scope",
+        choices=["hot100", "selected"],
+        default="hot100",
+        help="hot100=只做 Hot 100（默认，原行为不变）；selected=data/master.json 的 352 道精选（跳过已有）",
+    )
     args = ap.parse_args()
 
     key = api_key()
     hot = json.loads((DATA / "lc_hot100.json").read_text(encoding="utf-8-sig"))
+    if args.scope == "selected":
+        items = json.loads(MASTER.read_text(encoding="utf-8-sig"))
+    else:
+        items = hot
     statements = json.loads((DATA / "statements_full.json").read_text(encoding="utf-8"))
     catalog = {
         str(item["no"]).strip(): item
@@ -220,7 +256,7 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
 
     todo = []
-    for item in hot:
+    for item in items:
         no = str(item["no"]).strip()
         path = OUT / f"{no}.md"
         if path.exists() and path.stat().st_size > 800:
@@ -229,11 +265,13 @@ def main() -> None:
         if not raw or not (raw.get("translatedContent") or raw.get("content")):
             print(f"  skip {no}（没有题面）", flush=True)
             continue
-        todo.append((no, raw, catalog.get(no, {})))
+        # catalog 缺这道题时（master.json 里有 6 道不在 lc_catalog.json）用 master 的字段兜底
+        cat = catalog.get(no) or (master_catalog_item(item) if args.scope == "selected" else {})
+        todo.append((no, raw, cat))
     if args.limit:
         todo = todo[: args.limit]
 
-    print(f"hot100={len(hot)} todo={len(todo)}", flush=True)
+    print(f"scope={args.scope} targets={len(items)} todo={len(todo)}", flush=True)
     started = time.time()
     lock = threading.Lock()
     done = 0

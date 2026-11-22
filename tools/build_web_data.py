@@ -199,21 +199,43 @@ def build_detail(raw: dict) -> dict:
 
 
 def write_teachings(problems: list[dict]) -> dict:
-    """把 data/teachings/<题号>.md 汇编成前端读的 teachings.json（Hot 100 的深度讲解）。"""
-    src = DATA / "teachings"
+    """汇编讲解：data/teachings/<题号>.md（长精讲）+ data/analyses/<题号>.md（短解析）。
+
+    以前只有 100 篇长精讲，塞一个 teachings.json（600KB）还能接受；现在要覆盖 4000+ 道题，
+    单文件会涨到 5MB 级别，所以改成**按题号分片**（和题面同一套分片规则，每片 50 题），
+    题目页只拉自己那一片。
+    """
     payload: dict[str, str] = {}
-    if src.exists():
+    for folder, kind in (("teachings", "long"), ("analyses", "short")):
+        src = DATA / folder
+        if not src.exists():
+            continue
         for path in sorted(src.glob("*.md")):
             text = path.read_text(encoding="utf-8").strip()
-            if text:
-                payload[path.stem] = text
+            if not text:
+                continue
+            # 长精讲优先：同一题两边都有时保留长的那份
+            if path.stem in payload and kind == "short":
+                continue
+            payload[path.stem] = text
 
     for problem in problems:
         problem["hasTeaching"] = problem["no"] in payload
 
-    (OUT / "teachings.json").write_text(
-        json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"
-    )
+    out_dir = OUT / "teachings"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for old in out_dir.glob("*.json"):
+        old.unlink()
+    shards: dict[int, dict[str, str]] = {}
+    for no, text in payload.items():
+        # 必须和题面用同一个分片键：LCP / LCR / 面试题 这类非纯数字题号 int() 会炸
+        shard = norm_no(no) // SHARD_SIZE
+        shards.setdefault(shard, {})[no] = text
+    for shard, items in shards.items():
+        (out_dir / f"{shard}.json").write_text(
+            json.dumps(items, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"
+        )
+
     return {"teachingCount": len(payload), "teachingChars": sum(len(v) for v in payload.values())}
 
 
