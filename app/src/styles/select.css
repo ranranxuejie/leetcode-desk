@@ -1,0 +1,279 @@
+/* ==========================================================================
+   自绘下拉 · Select
+   --------------------------------------------------------------------------
+   原生 <select> 的展开列表由操作系统绘制（Windows 上是浅灰白底、方角、系统字体），
+   CSS 完全管不到它 —— 这就是「和界面格格不入」的根源。这个文件给自绘下拉收口：
+
+     结构
+       .sel > .sel__trigger            button[role=combobox]，收起态
+             └ .sel__value / .sel__chev
+       .sel__menu                      portal 到 body 的 fixed 弹层，role=listbox
+             └ .sel__opt                role=option（左缘琥珀竖条 = 当前项）
+
+   约定
+     1. 只用 tokens.css 的语义令牌，不写字面颜色 —— 浅色主题换 tokens 时自动跟随。
+     2. 尺寸和原来的 .select 对齐：md = --h-md / sm = --h-sm、--r-md、1px 描边、
+        --bg-surface-3、--fs-md（筛选条里降一档 --fs-sm）。
+     3. 弹层用 --mat-overlay-*（--r-lg 圆角 + --shadow-3 高程），和命令面板同一层语言。
+     4. 动效只做「展开时 4px 归位 + 透明度」，reduced-motion / data-motion=off 下全关。
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- 触发器 */
+
+.sel {
+  position: relative;
+  display: inline-flex;
+  /* 按内容收缩（筛选条里 min-width 兜底，专题那档 max-width 截断），不抢父容器宽度 */
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+.sel__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  height: var(--h-md);
+  padding: 0 var(--sp-2) 0 var(--sp-3);
+  font-family: inherit;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-snug);
+  color: var(--text-1);
+  text-align: left;
+  background: var(--bg-surface-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition:
+    border-color var(--t-base) var(--ease),
+    box-shadow var(--t-base) var(--ease),
+    color var(--t-base) var(--ease);
+}
+
+/* hover / focus / 展开：和 .select 同一套反馈（描边提亮 → 琥珀描边 + 外环） */
+.sel__trigger:hover {
+  border-color: var(--border-default);
+}
+
+.sel__trigger:focus {
+  outline: none;
+}
+
+.sel__trigger:focus-visible,
+.sel.is-open .sel__trigger {
+  outline: none;
+  border-color: var(--accent-line);
+  box-shadow: var(--ring-accent);
+}
+
+/* 收起态的文字：一行，超长省略（专题名可能比 150px 的触发器宽） */
+.sel__value {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 右侧 chevron：展开时翻 180° 并染成琥珀（系统箭头做不到这件事） */
+.sel__chev {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--text-3);
+  transition:
+    transform var(--t-base) var(--ease),
+    color var(--t-base) var(--ease);
+}
+
+.sel__trigger:hover .sel__chev {
+  color: var(--text-2);
+}
+
+.sel.is-open .sel__chev {
+  transform: rotate(180deg);
+  color: var(--accent);
+}
+
+/* ---- sm：题目页顶栏那种一行多控件的位置（26px，和 .btn--sm / .icon-btn 齐平） ---- */
+
+.sel--sm .sel__trigger {
+  gap: var(--sp-1);
+  height: var(--h-sm);
+  padding: 0 var(--sp-1) 0 var(--sp-2);
+  font-size: var(--fs-sm);
+}
+
+.sel--sm .sel__chev {
+  width: 12px;
+  height: 12px;
+}
+
+/* ---------------------------------------------------------------- 弹层 */
+
+.sel__menu {
+  position: fixed;
+  /* 高于页面内的一切（粘性表头 8/9、侧栏 6、提示气泡 95 之下、弹窗 80 之下） */
+  z-index: 60;
+  min-width: 120px;
+  /* 竖屏窄窗口里也不许横向溢出 */
+  max-width: calc(100vw - var(--sp-4));
+  /* 和 Select.tsx 的 MENU_MAX_HEIGHT 对齐：超过就内部滚动，页面不跟着长 */
+  max-height: 320px;
+  padding: var(--sp-1);
+  background: var(--mat-overlay-bg);
+  border: 1px solid var(--mat-overlay-border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--mat-overlay-shadow);
+  overflow-y: auto;
+  /* 滚到底不把页面一起带着滚 */
+  overscroll-behavior: contain;
+  animation: sel-menu-in var(--t-fast) var(--ease-out-quint) both;
+}
+
+/* 向上弹时，入场方向反过来（视觉上从触发器「长出来」） */
+.sel__menu[data-placement='top'] {
+  animation-name: sel-menu-in-up;
+}
+
+@keyframes sel-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sel-menu-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------- 选项 */
+
+.sel__opt {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 30px;
+  padding: 0 var(--sp-2) 0 var(--sp-3);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-2);
+  white-space: nowrap;
+  cursor: pointer;
+  /* 选项里不需要选中文字，避免拖拽时选到一半 */
+  user-select: none;
+}
+
+/* 当前项左侧的琥珀小竖条：和侧边栏导航的指示条同一套语言 */
+.sel__opt::before {
+  content: '';
+  position: absolute;
+  left: var(--sp-1);
+  top: 50%;
+  translate: 0 -50%;
+  width: 2px;
+  height: 14px;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity var(--t-fast) var(--ease);
+}
+
+/* 划过 / 键盘当前项：抬一档底色 */
+.sel__opt:hover,
+.sel__opt.is-active {
+  color: var(--text-1);
+  background: var(--bg-surface-hover);
+}
+
+/* 已选中项：琥珀淡底 + 竖条（写在 hover 之后，覆盖同一档底色） */
+.sel__opt.is-selected {
+  color: var(--text-1);
+  background: var(--accent-wash);
+}
+
+.sel__opt.is-selected::before {
+  opacity: 1;
+}
+
+/* 已选中项同时被划过 / 是键盘当前项：底色再重一点，竖条不变 */
+.sel__opt.is-selected:hover,
+.sel__opt.is-selected.is-active {
+  background: var(--accent-wash-strong);
+}
+
+.sel__opt-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sel__opt-hint {
+  flex: none;
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+/* 计数：等宽数字，右对齐成一列，扫读时不跳 */
+.sel__opt-count {
+  flex: none;
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--ls-normal);
+  color: var(--text-3);
+}
+
+.sel__opt.is-selected .sel__opt-count,
+.sel__opt.is-active .sel__opt-count {
+  color: var(--text-2);
+}
+
+/* ---------------------------------------------------------------- 页面里的尺寸上下文 */
+
+/* 题库筛选条：和原来的 .select 一样按内容收缩，最窄 122px，字号降一档 */
+.filter-bar .sel {
+  min-width: 122px;
+}
+
+.filter-bar .sel__trigger {
+  font-size: var(--fs-sm);
+}
+
+/* 专题下拉：专题名长，收起态限宽靠省略号，展开后弹层里看全名 */
+.sel--topic {
+  max-width: 150px;
+}
+
+/* ---------------------------------------------------------------- 降级 */
+
+/* 减弱动效：不做展开动画、chevron 不转、竖条不淡入 */
+@media (prefers-reduced-motion: reduce) {
+  .sel__menu {
+    animation: none;
+  }
+
+  .sel__chev,
+  .sel__opt::before {
+    transition: none;
+  }
+}
+
+html[data-motion='off'] .sel__menu {
+  animation: none;
+}

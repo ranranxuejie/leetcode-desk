@@ -1,0 +1,1270 @@
+/* ==========================================================================
+   代码实验室 · code 材质
+   --------------------------------------------------------------------------
+   这一块必须一眼看出「不是普通卡片」，靠四件事同时发生（设计规范 §1 / §7）：
+     ① 底色更暗更冷：--bg-code / --bg-code-2（比 --bg-surface 更暗、偏蓝）
+     ② 几乎方角：--r-code(2px) / --r-sm(5px)，绝不用 --r-lg
+     ③ 阴影是「凹进去」：--inset-code，而不是卡片的 --inset-top + --shadow-1
+     ④ 字体换成 --font-mono
+   语法色见 CodeLab.tsx 里的 HighlightStyle（--syn-*），CSS 这里只负责容器与结构。
+   ========================================================================== */
+
+.lab {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-code);
+  color: var(--text-1);
+}
+
+/* ---------------------------------------------------------------- 工具条 */
+
+/* 工具条属于 code 材质的一部分：--bg-code-2 + 1px --border-code 与编辑器区分隔 */
+.lab__head {
+  flex: none;
+  /* 44px：比 --h-md 高一个 --sp-3，装得下 26px 的按钮又保持仪器感 */
+  height: calc(var(--h-md) + var(--sp-3));
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-3);
+  border-bottom: 1px solid var(--border-code);
+  background: var(--bg-code-2);
+}
+
+.lab__dot {
+  width: var(--sp-2);
+  height: var(--sp-2);
+  flex: none;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  box-shadow: var(--ring-accent);
+}
+
+.lab__title {
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  /* 中文标题不加字距、不做 uppercase（规范 §2.4） */
+  letter-spacing: var(--ls-normal);
+  color: var(--text-2);
+}
+
+.lab__lang {
+  display: inline-flex;
+  align-items: center;
+  height: var(--sp-4);
+  padding: 0 var(--sp-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  background: var(--bg-code-3);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-xs);
+}
+
+.lab__status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+.lab__status .spinner {
+  width: var(--sp-3);
+  height: var(--sp-3);
+  border-width: 2px;
+}
+
+.lab__status[data-tone='error'] {
+  color: var(--danger-text);
+}
+
+/* 工具条按钮：高度收到 --h-sm，字号 --fs-xs，圆角走 code 材质的 --r-xs */
+.lab__head .btn {
+  height: var(--h-sm);
+  padding: 0 var(--sp-2);
+  gap: var(--sp-1);
+  font-size: var(--fs-xs);
+  background: var(--bg-code-3);
+  border-color: var(--border-code);
+  border-radius: var(--r-xs);
+  color: var(--text-2);
+}
+
+.lab__head .btn svg {
+  width: var(--sp-3);
+  height: var(--sp-3);
+}
+
+.lab__head .btn:hover:not(:disabled) {
+  background: var(--bg-surface-2);
+  border-color: var(--border-default);
+  color: var(--text-1);
+}
+
+/* 主操作：琥珀底 + --accent-ink 文字（成功的绿色反馈在 motion.css 里接管） */
+.lab__head .btn--run {
+  padding: 0 var(--sp-3);
+  font-weight: var(--fw-semibold);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.lab__head .btn--run:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: var(--accent-ink);
+}
+
+.lab__head .btn--run:disabled {
+  opacity: 0.6;
+}
+
+/* ---------------------------------------------------------------- 横幅 */
+
+.lab__banner {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  font-size: var(--fs-xs);
+  color: var(--accent-text-soft);
+  background: var(--accent-wash);
+  border-bottom: 1px solid var(--accent-line);
+}
+
+.lab__banner--error {
+  color: var(--danger-text);
+  background: var(--danger-wash);
+  border-bottom-color: var(--danger-line);
+}
+
+.lab__banner .btn {
+  margin-left: auto;
+  height: var(--h-sm);
+  padding: 0 var(--sp-2);
+  font-size: var(--fs-xs);
+  background: transparent;
+  border-color: currentColor;
+  border-radius: var(--r-xs);
+  color: inherit;
+}
+
+/* ---------------------------------------------------------------- 编辑器 */
+
+/*
+ * 编辑器本体：--bg-code 底 + 1px --border-code 外框 + --r-code 圆角 + --inset-code 内阴影。
+ * 留出一点外边距，让这块「凹面」从工具条与用例区之间浮出来。
+ * 内部所有颜色（背景 / 行号 / 当前行 / 选区 / 光标 / 括号 / 搜索）都由
+ * CodeLab.tsx 里的 EditorView.theme 负责，避免和 CodeMirror 的 baseTheme 抢优先级。
+ */
+.lab__editor {
+  flex: 1;
+  min-height: 120px;
+  position: relative;
+  overflow: hidden;
+  margin: var(--sp-2) var(--sp-3);
+  background: var(--bg-code);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-code);
+  box-shadow: var(--inset-code);
+}
+
+.lab__editor > div {
+  height: 100%;
+}
+
+.lab__editor .cm-editor {
+  height: 100%;
+}
+
+.lab__editor .cm-focused {
+  outline: none;
+}
+
+/* ---------------------------------------------------------------- 用例 / 控制台面板 */
+
+.lab__cases {
+  flex: none;
+  height: var(--lab-cases-h, 40%);
+  /* 编辑器保底：短屏（768 高）下用例区最多占到这里，剩下的留给编辑器 */
+  max-height: calc(100% - 400px);
+  min-height: 190px;
+  max-height: 46%;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border-code);
+  background: var(--bg-code);
+}
+
+.lab__cases-head {
+  flex: none;
+  height: var(--h-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 0 var(--sp-3);
+  border-bottom: 1px solid var(--border-code);
+  background: var(--bg-code-2);
+  /* 标签和按钮不收缩，挤的时候让中间那行汇总自己截断 */
+  overflow: hidden;
+}
+
+.lab__tab {
+  flex: none;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: var(--h-sm);
+  padding: 0 var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  border-radius: var(--r-xs);
+  transition:
+    color 0.16s var(--ease),
+    background 0.16s var(--ease);
+}
+
+.lab__tab svg {
+  width: var(--sp-3);
+  height: var(--sp-3);
+}
+
+.lab__tab:hover {
+  color: var(--text-1);
+}
+
+/* 当前项：抬一档底色 + 2px 琥珀下划线（强调色只给当前项，规范 §3.4） */
+.lab__tab.active {
+  color: var(--text-1);
+  background: var(--bg-code-3);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.lab__tab .count {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+}
+
+.lab__tab.active .count {
+  color: var(--accent-text-soft);
+}
+
+.lab__cases-tools {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.lab__cases-tools .btn {
+  flex: none;
+  height: var(--h-sm);
+  padding: 0 var(--sp-2);
+  gap: var(--sp-1);
+  font-size: var(--fs-xs);
+  background: transparent;
+  border-color: var(--border-code);
+  border-radius: var(--r-xs);
+  color: var(--text-3);
+}
+
+.lab__cases-tools .btn svg {
+  width: var(--sp-3);
+  height: var(--sp-3);
+}
+
+.lab__cases-tools .btn:hover:not(:disabled) {
+  color: var(--text-1);
+  border-color: var(--border-default);
+  background: var(--bg-code-3);
+}
+
+.lab__cases-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--sp-2) var(--sp-3) var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+/* ---------------------------------------------------------------- 「还没开始写」第三态 */
+
+/*
+ * 模板态的中性提示：不用红（没做错什么）、不用绿（也没做对什么）。
+ * 虚线描边 + --text-2 文字，语气和「运行报错」的实心横幅区分开。
+ */
+.lab__untouched {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-cjk);
+  color: var(--text-2);
+  background: var(--bg-code-2);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-sm);
+}
+
+.lab__untouched svg {
+  flex: none;
+  width: var(--sp-3);
+  height: var(--sp-3);
+  color: var(--accent-text-soft);
+}
+
+.lab__untouched code {
+  padding: 0 var(--sp-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--accent-text-soft);
+  background: var(--accent-wash);
+  border-radius: var(--r-xs);
+}
+
+/* ---------------------------------------------------------------- 边界用例折叠条 */
+
+/* 折叠条 + 展开后的用例行：同一个 flex 列，间距和 .lab__cases-body 对齐 */
+.lab__edge {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+/*
+ * 一行说清「几条 / 过没过」，点开才逐条展开 ——
+ * 10 条用例里 7 条是边界，全铺开会把 3 条官方示例淹掉。
+ */
+.lab__edge-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: 100%;
+  height: var(--h-sm);
+  padding: 0 var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  text-align: left;
+  background: var(--bg-code-2);
+  border: 1px dashed var(--border-code);
+  border-radius: var(--r-sm);
+  transition:
+    color 0.16s var(--ease),
+    background 0.16s var(--ease),
+    border-color 0.16s var(--ease);
+}
+
+.lab__edge-toggle:hover {
+  color: var(--text-1);
+  background: var(--bg-code-3);
+  border-color: var(--border-default);
+}
+
+.lab__edge-toggle svg {
+  flex: none;
+  width: var(--sp-3);
+  height: var(--sp-3);
+}
+
+.lab__edge-title {
+  flex: none;
+  color: var(--text-2);
+}
+
+.lab__edge-verdict {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.lab__edge-action {
+  margin-left: auto;
+  flex: none;
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+}
+
+/* 边界全过：只有结论用成功色，折叠条本身保持低调 */
+.lab__edge-toggle[data-tone='pass'] .lab__edge-verdict {
+  color: var(--success-text);
+}
+
+/* 边界失败：折叠条自己变红并报数量，否则用户以为全过了 */
+.lab__edge-toggle[data-tone='fail'] {
+  color: var(--danger-text);
+  background: var(--danger-wash);
+  border-color: var(--danger-line);
+}
+
+.lab__edge-toggle[data-tone='fail']:hover {
+  color: var(--danger-text);
+  background: var(--danger-wash);
+  border-color: var(--danger-text);
+}
+
+.lab__edge-toggle[data-tone='fail'] .lab__edge-title,
+.lab__edge-toggle[data-tone='fail'] .lab__edge-verdict,
+.lab__edge-toggle[data-tone='fail'] .lab__edge-action {
+  color: var(--danger-text);
+}
+
+/* ---------------------------------------------------------------- 用例卡片 */
+
+/* 比 content 卡片「薄」：圆角 --r-sm、底色 --bg-code-2、描边 --border-code，没有外阴影 */
+.case {
+  padding: var(--sp-2);
+  background: var(--bg-code-2);
+  border: 1px solid var(--border-code);
+  border-left: 2px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  transition: border-color 0.16s var(--ease);
+}
+
+.case--pass {
+  border-left-color: var(--success-line);
+}
+
+.case--fail {
+  border-left-color: var(--danger-line);
+}
+
+.case__top {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.case__no {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--syn-gutter);
+  min-width: var(--sp-4);
+  flex: none;
+}
+
+.case__label {
+  width: var(--sp-7);
+  flex: none;
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-normal);
+  color: var(--text-3);
+}
+
+.case__field {
+  flex: 1;
+  min-width: 0;
+  height: var(--h-sm);
+  padding: 0 var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-1);
+  background: var(--bg-code);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-xs);
+  outline: none;
+  transition:
+    border-color 0.14s var(--ease),
+    box-shadow 0.14s var(--ease);
+}
+
+.case__field:focus {
+  border-color: var(--accent-line);
+  box-shadow: var(--ring-accent);
+}
+
+.case__field::placeholder {
+  color: var(--text-3);
+}
+
+/* 结果徽标：语义色三档（文字 / 描边 / 底色） */
+.case__result {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: var(--sp-5);
+  padding: 0 var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-xs);
+}
+
+.case__result svg {
+  width: var(--sp-3);
+  height: var(--sp-3);
+}
+
+.case__result--pass {
+  color: var(--success-text);
+  background: var(--success-wash);
+  border-color: var(--success-line);
+}
+
+.case__result--fail {
+  color: var(--danger-text);
+  background: var(--danger-wash);
+  border-color: var(--danger-line);
+}
+
+.case__result--na {
+  color: var(--text-3);
+  background: var(--bg-code-3);
+}
+
+.case__actual {
+  margin-top: var(--sp-1);
+  /* 对齐上面的输入框：序号 16 + 来源标签 32 + 标签 32 + 3 个间距 24 */
+  padding-left: calc(var(--sp-4) + var(--sp-7) * 2 + var(--sp-2) * 3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+  /* 不用 word-break: break-all（会把标识符切碎），只让长串在必要时断 */
+  overflow-wrap: break-word;
+}
+
+.case__actual strong {
+  color: var(--text-1);
+  font-weight: var(--fw-medium);
+}
+
+.case__del,
+.case__trace {
+  width: var(--sp-5);
+  height: var(--sp-5);
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: var(--text-3);
+  border-radius: var(--r-xs);
+  transition:
+    color 0.16s var(--ease),
+    background 0.16s var(--ease);
+}
+
+.case__del:hover {
+  color: var(--danger-text);
+  background: var(--danger-wash);
+}
+
+.case__trace:hover:not(:disabled) {
+  color: var(--info-text);
+  background: var(--info-wash);
+}
+
+.case__trace:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.case__del svg,
+.case__trace svg {
+  width: var(--sp-3);
+  height: var(--sp-3);
+}
+
+/* ---------------------------------------------------------------- 用例来源 / 判题原因 */
+
+/* 来源徽标：只有「边界」用例带字，其余留一个等宽占位（.case__tag--ghost），
+   保证「调用」「期望」两行的输入框左边缘对齐。 */
+.case__tag {
+  flex: none;
+  width: var(--sp-7);
+  height: var(--sp-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-normal);
+  color: var(--accent-text-soft);
+  background: var(--accent-wash);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--r-xs);
+}
+
+.case__tag--ghost {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* 判失败的原因：紧贴用例行下方，和 .case__actual 同一个左缩进 */
+.case__reason {
+  margin-top: var(--sp-1);
+  /* 对齐上面的输入框：序号 16 + 来源标签 32 + 标签 32 + 3 个间距 24 */
+  padding-left: calc(var(--sp-4) + var(--sp-7) * 2 + var(--sp-2) * 3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--danger-text);
+  overflow-wrap: break-word;
+}
+
+/* 类型不符是「答非所问」，用信息色和真失败（红）区分开 */
+.case__reason[data-reason='type'] {
+  color: var(--info-text);
+}
+
+.case__del:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.case__del:disabled:hover {
+  color: var(--text-3);
+  background: transparent;
+}
+
+/* ---------------------------------------------------------------- 通过汇总 */
+
+.lab__summary {
+  /* 夹在标签和按钮中间：空间不够就自己截断，别把标签挤到换行 */
+  flex: 0 1 auto;
+  margin-left: var(--sp-2);
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+}
+
+.lab__summary strong {
+  font-weight: var(--fw-medium);
+  color: var(--success-text);
+}
+
+.lab__summary[data-tone='fail'] strong {
+  color: var(--danger-text);
+}
+
+/* 模板态 / 全部未判定：不绿不红，中性灰（不能让「还没开始」读起来像失败） */
+.lab__summary[data-tone='na'] strong {
+  color: var(--text-3);
+}
+
+.lab__summary-fail {
+  color: var(--danger-text);
+}
+
+/* 用例 tab 的徽标：有边界用例失败时变红 */
+.lab__tab .count--alert,
+.lab__tab.active .count--alert {
+  color: var(--danger-text);
+}
+
+/* ---------------------------------------------------------------- 控制台 */
+
+.lab__console {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  color: var(--text-2);
+  background: var(--bg-code);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.lab__console .err {
+  color: var(--danger-text);
+}
+
+.lab__console .ok {
+  color: var(--success-text);
+}
+
+.lab__console .dim {
+  color: var(--text-3);
+}
+
+.lab__console-empty {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  /* 内容包在 <p> 里，align-content 再兜一层：多行也不会被 auto 行拉开 */
+  align-content: center;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-cjk);
+  color: var(--text-3);
+  text-align: center;
+}
+
+.lab__console-empty p {
+  margin: 0;
+}
+
+.lab__console-empty .kbd {
+  margin: 0 var(--sp-1);
+}
+
+/* 控制台里每条结果右侧的「追踪」按钮 */
+.console__trace {
+  margin-left: var(--sp-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: var(--sp-4);
+  padding: 0 var(--sp-1);
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-xs);
+  vertical-align: middle;
+  transition:
+    color 0.16s var(--ease),
+    border-color 0.16s var(--ease),
+    background 0.16s var(--ease);
+}
+
+.console__trace:hover:not(:disabled) {
+  color: var(--info-text);
+  border-color: var(--info-line);
+  background: var(--info-wash);
+}
+
+.console__trace:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.console__trace svg {
+  width: var(--sp-3);
+  height: var(--sp-3);
+}
+
+/* 控制台顶部的通过汇总：和用例行的判定共用一套语义色 */
+.console__summary {
+  margin-bottom: var(--sp-2);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-code);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+/* 汇总分两段：官方示例 / 边界用例，各带各的语义色 */
+.console__summary-part {
+  white-space: nowrap;
+}
+
+.console__summary-part[data-tone='pass'] strong {
+  color: var(--success-text);
+}
+
+.console__summary-part[data-tone='fail'] strong {
+  color: var(--danger-text);
+}
+
+.console__summary-part[data-tone='na'] strong {
+  color: var(--text-3);
+}
+
+/* 控制台里的边界明细：默认折成一行，点开才逐条列 */
+.console__edge {
+  margin: var(--sp-1) 0 var(--sp-2);
+  padding-top: var(--sp-1);
+  border-top: 1px dashed var(--border-code);
+}
+
+.console__edge-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: var(--sp-5);
+  padding: 0 var(--sp-2) 0 var(--sp-1);
+  margin-bottom: var(--sp-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  background: var(--bg-code-2);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-xs);
+  transition:
+    color 0.16s var(--ease),
+    background 0.16s var(--ease),
+    border-color 0.16s var(--ease);
+}
+
+.console__edge-toggle:hover {
+  color: var(--text-1);
+  background: var(--bg-code-3);
+  border-color: var(--border-default);
+}
+
+.console__edge-toggle svg {
+  width: var(--sp-3);
+  height: var(--sp-3);
+}
+
+.console__edge-toggle[data-tone='fail'] {
+  color: var(--danger-text);
+  background: var(--danger-wash);
+  border-color: var(--danger-line);
+}
+
+.console__edge-toggle[data-tone='fail'] .dim {
+  color: var(--danger-text);
+}
+
+.console__summary strong {
+  font-weight: var(--fw-medium);
+  color: var(--success-text);
+}
+
+/* 注意：这里不再按父级的 data-tone 整体染红 —— 两段（示例 / 边界）各带各的语义色，
+   否则「示例 3/3 通过」会被边界失败连累成红色。 */
+
+/* 控制台里的「边界」小标签 */
+.console__tag {
+  margin-left: var(--sp-1);
+  padding: 0 var(--sp-1);
+  font-size: var(--fs-2xs);
+  color: var(--accent-text-soft);
+  background: var(--accent-wash);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--r-xs);
+}
+
+/* 判失败原因：单独一行，不抢错误栈的位置 */
+.console__why {
+  color: var(--danger-text);
+}
+
+/* ---------------------------------------------------------------- 用例追踪 / diff */
+
+.case__diff {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.55;
+}
+
+.case__diff-label {
+  display: inline-block;
+  width: var(--sp-6);
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+}
+
+.case__diff-part {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* 差异片段：语义色底 + 语义描边，不用第三方 diff 的绿/红原色 */
+.case__diff-part--diff {
+  padding: 0 2px;
+  color: var(--danger-text);
+  background: var(--danger-wash);
+  border-radius: var(--r-xs);
+  box-shadow: inset 0 0 0 1px var(--danger-line);
+}
+
+/* ---------------------------------------------------------------- 底部提示 */
+
+.lab__hint {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  height: var(--h-sm);
+  padding: 0 var(--sp-3);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-normal);
+  color: var(--text-3);
+  border-top: 1px solid var(--border-code);
+  background: var(--bg-code-2);
+}
+
+.lab__hint .kbd {
+  height: var(--sp-4);
+  min-width: var(--sp-4);
+  font-size: var(--fs-2xs);
+  color: var(--text-2);
+  background: var(--bg-code-3);
+  border-color: var(--border-code);
+}
+
+.lab__hint .mono {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+@media (max-width: 980px) {
+  .lab {
+    min-height: 620px;
+  }
+
+  .lab__cases {
+    height: 42%;
+    max-height: 48%;
+  }
+}
+
+/* ---------------------------------------------------------------- AI 判题 */
+
+.ai {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  background: var(--bg-code);
+}
+
+.ai__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border-bottom: 1px solid var(--border-code);
+  background: var(--bg-code-2);
+}
+
+.ai__verdict {
+  padding: 0 var(--sp-2);
+  height: var(--sp-5);
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-normal);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-pill);
+  color: var(--text-3);
+}
+
+.ai__verdict--pass {
+  color: var(--success-text);
+  background: var(--success-wash);
+  border-color: var(--success-line);
+}
+
+.ai__verdict--fail {
+  color: var(--danger-text);
+  background: var(--danger-wash);
+  border-color: var(--danger-line);
+}
+
+.ai__verdict--unknown {
+  color: var(--accent-text-soft);
+  background: var(--accent-wash);
+  border-color: var(--accent-line);
+}
+
+.ai__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.ai__actions .btn {
+  height: var(--h-sm);
+  padding: 0 var(--sp-2);
+  gap: var(--sp-1);
+  font-size: var(--fs-xs);
+  background: var(--bg-code-3);
+  border-color: var(--border-code);
+  border-radius: var(--r-xs);
+  color: var(--text-2);
+}
+
+.ai__actions .btn svg {
+  width: var(--sp-3);
+  height: var(--sp-3);
+}
+
+.ai__actions .btn:hover:not(:disabled) {
+  background: var(--bg-surface-2);
+  border-color: var(--border-default);
+  color: var(--text-1);
+}
+
+.ai__body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.ai__empty {
+  max-width: 560px;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-cjk);
+  color: var(--text-2);
+}
+
+.ai__empty-title {
+  margin-bottom: var(--sp-1);
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  color: var(--text-1);
+}
+
+.ai__empty p {
+  margin: 0 0 var(--sp-2);
+}
+
+.ai__empty b {
+  color: var(--text-1);
+}
+
+.ai__empty-note {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+.ai__empty .btn {
+  margin-top: var(--sp-1);
+  height: var(--h-sm);
+  padding: 0 var(--sp-2);
+  font-size: var(--fs-xs);
+  border-radius: var(--r-xs);
+}
+
+.ai__thinking {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-1) var(--sp-1) 0;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.ai .spin {
+  width: var(--sp-3);
+  height: var(--sp-3);
+  animation: spin 1s linear infinite;
+}
+
+.ai__error {
+  margin-bottom: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-cjk);
+  color: var(--danger-text);
+  background: var(--danger-wash);
+  border: 1px solid var(--danger-line);
+  border-radius: var(--r-sm);
+}
+
+.ai__error-hint {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+}
+
+/* AI 回复是阅读型内容，但仍落在 code 材质里：字距/行高按阅读规则，颜色用 code 表面 */
+.ai__md .prose {
+  max-width: none;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-loose);
+  color: var(--text-2);
+}
+
+.ai__md .prose h1,
+.ai__md .prose h2,
+.ai__md .prose h3,
+.ai__md .prose h4 {
+  margin: var(--sp-3) 0 var(--sp-1);
+  font-size: var(--fs-md);
+  color: var(--text-1);
+}
+
+.ai__md .prose p,
+.ai__md .prose li {
+  margin: var(--sp-1) 0;
+}
+
+.ai__md .prose strong {
+  color: var(--text-1);
+}
+
+.ai__md .prose code {
+  font-size: var(--fs-xs);
+  color: var(--accent-text-soft);
+  background: var(--bg-code-3);
+  border: none;
+  border-radius: var(--r-xs);
+}
+
+/* 嵌在阅读区里的代码块：同背景，圆角 --r-sm，不再加内阴影（规范 §7.7） */
+.ai__md .prose pre {
+  padding: var(--sp-2) var(--sp-3);
+  overflow: auto;
+  background: var(--bg-code);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-sm);
+}
+
+.ai__md .prose pre code {
+  color: var(--text-1);
+  background: none;
+}
+
+.ai__md .prose blockquote {
+  margin: var(--sp-2) 0;
+  padding-left: var(--sp-2);
+  color: var(--text-2);
+  border-left: 2px solid var(--border-strong);
+}
+
+.ai__md .prose hr {
+  margin: var(--sp-3) 0;
+  border: none;
+  border-top: 1px solid var(--border-code);
+}
+
+.ai__md .prose table {
+  font-size: var(--fs-xs);
+}
+
+.ai__md .prose th,
+.ai__md .prose td {
+  border-color: var(--border-subtle);
+}
+
+.ai__ask {
+  flex: none;
+  display: flex;
+  gap: var(--sp-1);
+  padding: var(--sp-2) var(--sp-3);
+  border-top: 1px solid var(--border-code);
+  background: var(--bg-code-2);
+}
+
+.ai__ask input {
+  flex: 1;
+  height: var(--h-md);
+  padding: 0 var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--text-1);
+  background: var(--bg-code);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-xs);
+  outline: none;
+  transition:
+    border-color 0.16s var(--ease),
+    box-shadow 0.16s var(--ease);
+}
+
+.ai__ask input:focus {
+  border-color: var(--accent-line);
+  box-shadow: var(--ring-accent);
+}
+
+.ai__ask input::placeholder {
+  color: var(--text-3);
+}
+
+.ai__ask input:disabled {
+  opacity: 0.55;
+}
+
+.ai__ask .btn {
+  height: var(--h-md);
+  padding: 0 var(--sp-3);
+  font-size: var(--fs-xs);
+  border-radius: var(--r-xs);
+}
+
+.ai__stale {
+  padding: 0 var(--sp-2);
+  font-size: var(--fs-2xs);
+  color: var(--accent-text-soft);
+  border: 1px dashed var(--accent-line);
+  border-radius: var(--r-pill);
+}
+
+/* AI 判题 / 终端面板需要更大的阅读面积 */
+.lab__cases--tall {
+  height: 62%;
+  max-height: 68%;
+}
+
+/* 面板被拖窄时（左右分栏可以拖到 400px 左右），工具条要能自己收：
+   标题省略号、语言标签和状态文字按容器宽度隐藏，而不是挤成两行 */
+.lab {
+  container-type: inline-size;
+}
+
+.lab__title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@container (max-width: 560px) {
+  .lab__lang {
+    display: none;
+  }
+
+  .lab__status {
+    max-width: 92px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@container (max-width: 430px) {
+  .lab__status {
+    display: none;
+  }
+}
+
+/* 短屏（1366×768 这类笔记本）：把底部那行键盘提示收掉，
+   把高度让给编辑器 —— 768 高时编辑器要能看见 18 行以上。 */
+@media (max-height: 820px) {
+  .lab__hint {
+    display: none;
+  }
+
+  /* 用例区原来 min-height 190px，短屏下会顶住不让编辑器长高 */
+  .lab__cases {
+    min-height: 150px;
+  }
+}
+
+/* 边界用例「与参考解不一致」：琥珀软失败。
+   参考解是 AI 写的、期望值也是它推出来的（实测不一致率 3.61%，74% 来自越界输入），
+   所以这种不一致不判红、不计 passes，只提示。 */
+.case--soft {
+  border-color: var(--accent-line);
+  background: var(--accent-wash);
+}
+
+.case--soft .case__result {
+  color: var(--accent-text-soft);
+}
+
+.lab__summary[data-tone='soft'] strong,
+.console__summary[data-tone='soft'] strong {
+  color: var(--accent-text-soft);
+}
+
+.lab__edge[data-tone='soft'] {
+  border-color: var(--accent-line);
+  background: var(--accent-wash);
+}
+
+.lab__edge[data-tone='soft'] .lab__edge-title {
+  color: var(--accent-text-soft);
+}

@@ -1,0 +1,495 @@
+/* ==========================================================================
+   设计令牌 · "Graphite & Amber / 精装仪表"
+   --------------------------------------------------------------------------
+   三层结构，改配色/字号只需要动这一个文件：
+
+     ① 原始值（primitive）  —— 具体色值、像素，只在下面出现一次
+     ② 语义名（semantic）   —— 描述用途：canvas / chrome / surface / code / reading
+     ③ 兼容别名（compat）   —— 老 CSS 里的 --paper / --ink / --cinnabar，全部指向语义名
+
+   四种「材质」（这是本项目的核心区分，别混用）：
+     chrome   侧栏 / 顶栏：最暗、最冷、无圆角，像仪器外壳
+     content  卡片 / 表格 / 表单：抬起来一层，1px 描边 + 顶部微高光
+     code     编辑器 / 终端 / 代码块：比 content 更暗更冷，内阴影（凹进去），几乎方角
+     reading  题面 / 精讲 / 解析：没有卡片，靠排版节奏（行高、字距、分割线）说话
+
+   两种颜色模式：
+     dark   默认，就是 :root 这一层（不需要任何属性）
+     light  同文件末尾的 :root[data-theme='light'] 覆盖层 —— 只覆盖「原始值」和
+            「语义别名」，组件 CSS 一行都不用改（这就是三层结构的意义）。
+
+   规范文档：docs/设计规范.md（第 3.7 节讲浅色主题）
+   ========================================================================== */
+
+:root {
+  /* ======================================================================
+     1. 字体族
+     ----------------------------------------------------------------------
+     拉丁字母用 Instrument Sans（捆绑，约 30KB，天然不含中文），
+     中文自动回落到系统黑体 —— 这样跨平台的关键视觉（数字、英文标识）是稳定的，
+     中文跟随系统（PingFang / 微软雅黑 / Noto）也不会出现「英文中文两套骨架」的割裂。
+     ====================================================================== */
+  --font-ui: 'Instrument Sans Variable', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei UI', 'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC',
+    system-ui, sans-serif;
+  --font-display: 'Fraunces Variable', 'Songti SC', 'Noto Serif CJK SC',
+    'Source Han Serif SC', Georgia, serif;
+  --font-mono: 'JetBrains Mono Variable', 'Cascadia Code', 'SF Mono', Menlo,
+    Consolas, monospace;
+  /* 大字数字：衬线数字有「印刷品」的质感，和仪表盘的气质一致 */
+  --font-num: 'Fraunces Variable', Georgia, serif;
+  /* 表格/统计里的等宽数字：位数对齐，扫读不跳 */
+  --font-data: 'JetBrains Mono Variable', 'Cascadia Code', Consolas, monospace;
+
+  /* ======================================================================
+     2. 字号阶梯（基准 13.5px，比例约 1.125；标题档跳得更开）
+     ----------------------------------------------------------------------
+     只有这 9 档。不要再写 11.5 / 12.5 / 13.8 这种半像素值 —— 半像素在
+     100% 缩放下会被渲染成 1px 或 2px 的抖动，是「看着糙」的常见原因。
+     ====================================================================== */
+  --fs-2xs: 10px; /* 图例、极小元信息 */
+  --fs-xs: 11px; /* 标签、辅助说明 */
+  --fs-sm: 12px; /* 次要正文、表格副信息 */
+  --fs-md: 13.5px; /* 正文、控件（基准） */
+  --fs-lg: 15px; /* 小标题、强调正文 */
+  --fs-xl: 17px; /* 区块标题 */
+  --fs-2xl: 21px; /* 卡片大标题 */
+  --fs-3xl: 26px; /* 页面标题 */
+  --fs-4xl: 34px; /* 大标题 */
+  --fs-5xl: 44px; /* hero（配 clamp 用） */
+
+  /* 代码专用：等宽字体的视觉重量比比例字体轻，同一「档」在代码区要略大一点才不显小。
+     这是唯一一个不参与上面阶梯的尺寸，只给编辑器 / 终端 / 代码块用。 */
+  --fs-code: 13px;
+
+  /* 行高：中文需要比拉丁更松，正文 1.75 是中文网页的安全值 */
+  --lh-tight: 1.2;
+  --lh-snug: 1.4;
+  --lh-normal: 1.6;
+  --lh-cjk: 1.75;
+  --lh-loose: 1.85;
+
+  /* 字距：中文不要加字距（会散）；只有全大写拉丁标签才加宽 */
+  --ls-tight: -0.02em;
+  --ls-normal: 0;
+  --ls-wide: 0.06em;
+  --ls-caps: 0.12em;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+
+  /* ======================================================================
+     3. 颜色 · 原始值
+     ====================================================================== */
+  /* 中性色阶：从「外壳」到「抬起的表面」，逐级 +4% 亮度左右 */
+  --gray-0: #07090b; /* chrome */
+  --gray-1: #0a0c0f; /* canvas */
+  --gray-2: #12161b; /* surface */
+  --gray-3: #171c22; /* surface-2 / hover */
+  --gray-4: #1d232b; /* surface-3 / 输入框 */
+  --gray-5: #232a33; /* surface-hover */
+  --gray-6: #2b333d; /* 分隔线加强 */
+
+  /* 代码表面：比中性色更冷（偏蓝），让「进入编辑器」有材质切换的感觉 */
+  --code-0: #0a0e13;
+  --code-1: #0f141a;
+  --code-2: #151b23;
+
+  /* 文字：对比度按 canvas 计算 —— 15:1 / 8:1 / 4.7:1 / 3.1:1 */
+  --gray-text-1: #e9edf2;
+  --gray-text-2: #a3adb9;
+  --gray-text-3: #7d8894;
+  --gray-text-4: #5b6672;
+
+  /* 琥珀：本项目的唯一强调色，只给「当前 / 主操作 / 关键数字」 */
+  --amber-300: #ffc46b;
+  --amber-400: #ffb84d;
+  --amber-500: #f5a524;
+  --amber-600: #d98d12;
+  --amber-700: #a86a09;
+  --amber-ink: #1a1206; /* 琥珀底上的文字 */
+
+  /* 语义色（每个色只给三档：文字 / 描边 / 底色） */
+  --green-400: #5ee0ab;
+  --green-500: #3ed598;
+  --green-600: #2fae7c;
+  --red-400: #ff8b8b;
+  --red-500: #ff6b6b;
+  --red-600: #e04f4f;
+  --blue-400: #8fb4ff;
+  --blue-500: #6d9eff;
+  --blue-600: #4f7fe0;
+
+  /* 语法高亮：从品牌色推导，不用第三方主题的原始色，
+     这样编辑器看起来是「这个产品的一部分」，而不是外挂了一个 One Dark */
+  --syn-keyword: #8ab4ff;
+  --syn-string: #7ddba8;
+  --syn-number: #f5a524;
+  --syn-comment: #5f6b78;
+  --syn-function: #e9edf2;
+  --syn-variable: #cfd7e0;
+  --syn-type: #b9a7ff;
+  --syn-operator: #9aa7b4;
+  --syn-punct: #7d8894;
+  --syn-invalid: #ff6b6b;
+  --syn-gutter: #4b5561;
+  --syn-selection: rgba(109, 158, 255, 0.18);
+  --syn-active-line: rgba(255, 255, 255, 0.035);
+
+  /* ---------------------------------------------------------------- 3.5 叠层 / 细线 / 光晕
+     ------------------------------------------------------------------
+     深色界面里「叠一层白」的地方（内高光、滚动条、反光、涟漪、流光），
+     在浅色下必须换成「叠一层黑」，否则会整片隐形。这一组就是那层白/黑：
+       --wash-1  最轻（内高光、点阵）
+       --wash-2  中等（滚动条、倾斜反光）
+       --wash-3  最强（流光、涟漪）
+     其它光晕类（环境光、聚光、扫光、选中底色）单独给令牌，浅色下统一降透明度。
+     ================================================================== */
+  --wash-1: rgba(255, 255, 255, 0.04);
+  --wash-2: rgba(255, 255, 255, 0.12);
+  --wash-3: rgba(255, 255, 255, 0.22);
+  --hairline: rgba(255, 255, 255, 0.06); /* 1px 细线（--border-subtle 的原始值） */
+
+  --ambient-amber: rgba(245, 165, 36, 0.06); /* 页面顶部环境光 */
+  --ambient-blue: rgba(109, 158, 255, 0.045);
+  --selection-bg: rgba(245, 165, 36, 0.26); /* 文本选中 */
+  --selection-ink: #ffffff;
+  --sheen: rgba(255, 255, 255, 0.22); /* 流光扫过标签 */
+  /* 背景点阵（canvas 直接画，所以要在 JS 里读这个变量） */
+  --dot-grid-ink: rgba(255, 255, 255, 0.06);
+  --ripple-1: rgba(255, 255, 255, 0.55); /* 点击涟漪 */
+  --ripple-2: rgba(255, 255, 255, 0.75); /* 主按钮上的涟漪（更亮） */
+  --accent-spot: rgba(245, 165, 36, 0.1); /* 卡片聚光 */
+  --accent-sweep: rgba(245, 165, 36, 0.16); /* 横幅扫光 */
+  --accent-ghost: rgba(245, 165, 36, 0.08); /* 指针环的底色 */
+  --accent-glow: rgba(245, 165, 36, 0.5); /* 阴影光晕（滚动进度条等） */
+  --accent-glow-strong: rgba(245, 165, 36, 0.55); /* 描边光晕（导航指示条、光标环） */
+  --danger-line-strong: rgba(255, 107, 107, 0.55); /* 输入框报错的描边 */
+
+  /* 实心底上的文字（成功 / 危险按钮、窗口关闭按钮） */
+  --success-ink: #06231a;
+  --danger-ink: #ffffff;
+
+  /* ======================================================================
+     4. 颜色 · 语义名（组件只用这一层）
+     ====================================================================== */
+  --bg-canvas: var(--gray-1);
+  --bg-chrome: var(--gray-0);
+  --bg-surface: var(--gray-2);
+  --bg-surface-2: var(--gray-3);
+  --bg-surface-3: var(--gray-4);
+  --bg-surface-hover: var(--gray-5);
+  --bg-code: var(--code-0);
+  --bg-code-2: var(--code-1);
+  --bg-code-3: var(--code-2);
+  --bg-overlay: rgba(5, 7, 10, 0.72);
+
+  --text-1: var(--gray-text-1);
+  --text-2: var(--gray-text-2);
+  --text-3: var(--gray-text-3);
+  --text-4: var(--gray-text-4);
+
+  --border-subtle: var(--hairline);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-code: rgba(255, 255, 255, 0.05);
+
+  --accent: var(--amber-500);
+  --accent-hover: var(--amber-400);
+  --accent-press: var(--amber-600);
+  --accent-soft: var(--amber-300);
+  --accent-deep: var(--amber-700);
+  --accent-ink: var(--amber-ink);
+  /* 琥珀当「文字」用时走这两个：深色下就是亮琥珀，浅色下自动换成深琥珀。
+     填充类（按钮底、指示条、热力图）继续用 --accent / --accent-soft。 */
+  --accent-text: var(--amber-500);
+  --accent-text-soft: var(--amber-300);
+  /* 大字号（≥26px 的 display 标题）专用：浅色下不必压到正文那么深，
+     留一点琥珀的亮，对比度按「大字号 3:1」算。 */
+  --accent-display: var(--amber-500);
+  --accent-wash: rgba(245, 165, 36, 0.12);
+  --accent-wash-strong: rgba(245, 165, 36, 0.2);
+  --accent-line: rgba(245, 165, 36, 0.3);
+
+  --success: var(--green-500);
+  --success-text: var(--green-400);
+  --success-deep: var(--green-600);
+  --success-wash: rgba(62, 213, 152, 0.12);
+  --success-line: rgba(62, 213, 152, 0.28);
+
+  --danger: var(--red-500);
+  --danger-text: var(--red-400);
+  --danger-deep: var(--red-600);
+  --danger-wash: rgba(255, 107, 107, 0.12);
+  --danger-line: rgba(255, 107, 107, 0.28);
+
+  --info: var(--blue-500);
+  --info-text: var(--blue-400);
+  --info-deep: var(--blue-600);
+  --info-wash: rgba(109, 158, 255, 0.12);
+  --info-line: rgba(109, 158, 255, 0.28);
+
+  /* ======================================================================
+     5. 间距 / 尺寸 / 圆角
+     ====================================================================== */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 32px;
+  --sp-8: 40px;
+  --sp-9: 56px;
+
+  --h-sm: 26px; /* 小按钮 / chip */
+  --h-md: 32px; /* 标准控件 */
+  --h-lg: 38px; /* 大按钮 / 搜索框 */
+
+  --r-xs: 3px; /* 小标签 */
+  --r-sm: 5px; /* 徽标、代码块 */
+  --r-md: 8px; /* 按钮、输入、chip */
+  --r-lg: 12px; /* 卡片、面板 */
+  --r-xl: 16px; /* 弹窗、大容器 */
+  --r-pill: 999px;
+  --r-code: 2px; /* 代码表面：几乎方角，强调「仪器」感 */
+
+  /* ======================================================================
+     6. 阴影与高程
+     ----------------------------------------------------------------------
+     深色界面的「抬起来」主要靠描边 + 顶部 1px 高光，阴影只是辅助；
+     代码表面反过来：靠内阴影「凹进去」，和 content 形成材质对比。
+     ====================================================================== */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 10px 28px -14px rgba(0, 0, 0, 0.75);
+  --shadow-3: 0 28px 72px -28px rgba(0, 0, 0, 0.95);
+  --inset-top: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  --inset-code: inset 0 1px 0 rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+  --ring-accent: 0 0 0 3px rgba(245, 165, 36, 0.18);
+  --ring-info: 0 0 0 3px rgba(109, 158, 255, 0.18);
+  --ring-danger: 0 0 0 3px rgba(255, 107, 107, 0.18);
+
+  /* ======================================================================
+     7. 材质组合（组件直接引用这几个，别自己拼）
+     ====================================================================== */
+  --mat-chrome: var(--bg-chrome);
+  /* 标题栏 / 侧栏 / 顶栏的底色（布局层引用的名字，别删） */
+  --mat-chrome-bg: var(--bg-chrome);
+  --mat-content-bg: var(--bg-surface);
+  --mat-content-border: var(--border-subtle);
+  --mat-content-shadow: var(--shadow-1), var(--inset-top);
+  --mat-overlay-bg: var(--bg-surface-2);
+  --mat-overlay-border: var(--border-strong);
+  --mat-overlay-shadow: var(--shadow-3);
+  --mat-code-bg: var(--bg-code);
+  --mat-code-border: var(--border-code);
+  --mat-code-shadow: var(--inset-code);
+
+  /* 动效时长/缓动在 motion.css 里，这里只留一个兼容别名 */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   兼容别名 —— 老 CSS 与内联样式里的旧变量名，全部指向新语义色。
+   迁移完成后可以逐条删掉，但保留它们不会拖慢任何东西。
+   ========================================================================== */
+:root {
+  /* 表面 */
+  --paper: var(--bg-canvas);
+  --paper-soft: var(--bg-surface);
+  --paper-deep: var(--bg-surface-3);
+  --paper-warm: var(--bg-surface-2);
+  --surface: var(--bg-surface);
+  --surface-1: var(--bg-surface);
+  --surface-2: var(--bg-surface-2);
+  --surface-3: var(--bg-surface-3);
+  --surface-hover: var(--bg-surface-hover);
+  --bg-surface-1: var(--bg-surface);
+  --bg: var(--bg-canvas);
+  --bg-soft: var(--bg-surface-2);
+  --overlay: var(--bg-overlay);
+
+  /* 代码 */
+  --code: var(--bg-code);
+  --code-soft: var(--bg-code-2);
+  --code-line: var(--border-code);
+
+  /* 侧栏 */
+  --sidebar: var(--bg-chrome);
+  --sidebar-soft: var(--bg-surface);
+  --sidebar-line: var(--border-subtle);
+  --sidebar-text: var(--text-1);
+
+  /* 文字（--text-1/2/3/4 已是语义名，这里只补旧名） */
+  --ink: var(--text-1);
+  --ink-soft: var(--text-2);
+  --text: var(--text-1);
+  --muted: var(--text-2);
+  --muted-2: var(--text-3);
+
+  /* 描边 */
+  --line: var(--border-subtle);
+  --line-strong: var(--border-default);
+
+  /* 强调与语义 */
+  --cinnabar: var(--accent);
+  --cinnabar-deep: var(--accent-deep);
+  --cinnabar-soft: var(--accent-soft);
+  --gold: var(--amber-300);
+  --jade: var(--success);
+  --indigo: var(--info);
+
+  /* 圆角 / 阴影 / 字体 */
+  --radius: var(--r-md);
+  --radius-sm: var(--r-sm);
+  --radius-lg: var(--r-lg);
+  --radius-pill: var(--r-pill);
+  --shadow-sm: var(--shadow-1);
+  --shadow-md: var(--shadow-2);
+  --shadow-lg: var(--shadow-3);
+  --glow-accent: 0 0 0 1px var(--accent-line), 0 12px 32px -18px rgba(245, 165, 36, 0.55);
+  --font-body: var(--font-ui);
+}
+
+/* ==========================================================================
+   浅色主题 · 覆盖层（html[data-theme='light']）
+   --------------------------------------------------------------------------
+   只覆盖「原始值」和「语义别名」—— 组件 CSS 一行都不用改。
+   选择器用 :root[data-theme='light']（0,2,0），稳赢上面的 :root（0,1,0），
+   所以块内只需要写「和深色不一样」的令牌，其余自动继承。
+
+   气质：暖白纸面 + 琥珀，不是「纯白 + 冷蓝」。
+     canvas #f7f6f3 / chrome #efece6 / surface #ffffff —— 三层都是暖调，
+     代码表面再压暗一档（#f3f1ec），进编辑器时仍然能感觉到材质切换。
+
+   对比度（相对 --bg-canvas #f7f6f3，见 docs/设计规范.md 3.7）：
+     text-1 15.9:1 / text-2 8.2:1 / text-3 5.3:1 / text-4 2.8:1（只做装饰）
+   语法色相对 --bg-code #f3f1ec 全部 ≥ 4.5:1（行号槽 3.3:1，装饰性）。
+   ========================================================================== */
+
+:root[data-theme='light'] {
+  /* 让原生滚动条 / 表单控件 / 系统 UI 跟着变亮 */
+  color-scheme: light;
+
+  /* ---------------------------------------------------------------- 原始值 · 中性 */
+  --gray-0: #efece6; /* chrome：比 canvas 再深一点的暖灰，像纸的背面 */
+  --gray-1: #f7f6f3; /* canvas：暖白纸 */
+  --gray-2: #ffffff; /* surface：卡片是纯白，才「抬」得起来 */
+  --gray-3: #f4f2ed; /* surface-2 / hover */
+  --gray-4: #e9e6df; /* surface-3 / 输入框 */
+  --gray-5: #ece9e2; /* surface-hover */
+  --gray-6: #d8d3ca; /* 分隔线加强 */
+
+  /* 代码表面：比 canvas 略暗，和正文区分开 */
+  --code-0: #f3f1ec;
+  --code-1: #efede7;
+  --code-2: #e8e5dd;
+
+  /* ---------------------------------------------------------------- 原始值 · 文字
+     对比度按 canvas 算，同时保证在 chrome / surface-3 这类更深的底上仍 ≥ 4.5:1 */
+  --gray-text-1: #1c1b18;
+  --gray-text-2: #4d4a44;
+  --gray-text-3: #6a665f;
+  --gray-text-4: #9a958d;
+
+  /* ---------------------------------------------------------------- 原始值 · 琥珀
+     填充仍是亮琥珀（配深色字），只有「当文字用」的那两个变深，否则在浅底上看不清。 */
+  --amber-ink: #241a06; /* 琥珀底上的文字：浅色下依然是深色 */
+  --accent-deep: #c9800f; /* 渐变收尾：浅色下不用那么黑，否则按钮发脏 */
+
+  /* ---------------------------------------------------------------- 原始值 · 语义色
+     浅色下「文字档」要比深色深一档，「底色档」保持同一个色相。 */
+  --green-400: #12704f;
+  --green-500: #1a8a62;
+  --green-600: #0e5c40;
+  --red-400: #b3261e;
+  --red-500: #d13b34;
+  --red-600: #a8271f;
+  --blue-400: #1f5fa8;
+  --blue-500: #2f6fd0;
+  --blue-600: #1f57a8;
+
+  /* ---------------------------------------------------------------- 原始值 · 语法高亮
+     浅色版：色相不变、明度整体压深，保证对 --bg-code 都 ≥ 4.5:1。
+     注释 / 行号允许更淡（它们本来就是「退到背景里」的信息）。 */
+  --syn-keyword: #1d5fa8;
+  --syn-string: #1f7a4d;
+  --syn-number: #9a5b00; /* 建议值 #a86400 只有 4.2:1，压深一点才够 */
+  --syn-comment: #6f6a62; /* 建议值 #8b857c 只有 3.3:1 */
+  --syn-function: #1c1b18;
+  --syn-variable: #3a3833;
+  --syn-type: #6b4fa8;
+  --syn-operator: #55524c;
+  --syn-punct: #6b665f;
+  --syn-invalid: #c0392b;
+  --syn-gutter: #8a857c; /* 行号槽：装饰性，3.4:1 */
+  --syn-selection: rgba(29, 95, 168, 0.14);
+  --syn-active-line: rgba(0, 0, 0, 0.03);
+
+  /* ---------------------------------------------------------------- 叠层 / 细线
+     深色是「叠白」，浅色全部换成「叠黑」—— 这是任务 2 里那批硬编码值的归属。 */
+  --wash-1: rgba(0, 0, 0, 0.03);
+  --wash-2: rgba(0, 0, 0, 0.08);
+  --wash-3: rgba(0, 0, 0, 0.14);
+  --hairline: rgba(0, 0, 0, 0.08);
+
+  --ambient-amber: rgba(245, 165, 36, 0.05);
+  --ambient-blue: rgba(109, 158, 255, 0.04);
+  --selection-bg: rgba(245, 165, 36, 0.32);
+  --selection-ink: #1c1b18;
+  --sheen: rgba(255, 255, 255, 0.55); /* 浅色下的流光：白扫白几乎看不见，但比黑扫过自然 */
+  --dot-grid-ink: rgba(0, 0, 0, 0.07);
+  --ripple-1: rgba(0, 0, 0, 0.12); /* 涟漪：浅底上要「压一下」才看得见 */
+  --ripple-2: rgba(0, 0, 0, 0.18);
+  --accent-spot: rgba(245, 165, 36, 0.08);
+  --accent-sweep: rgba(245, 165, 36, 0.18);
+  --accent-ghost: rgba(245, 165, 36, 0.14);
+  --accent-glow: rgba(200, 128, 15, 0.28);
+  --accent-glow-strong: rgba(200, 128, 15, 0.34);
+  --danger-line-strong: rgba(179, 38, 30, 0.55);
+
+  --success-ink: #ffffff;
+  --danger-ink: #ffffff;
+
+  /* ---------------------------------------------------------------- 语义别名（字面值的那批） */
+  --bg-overlay: rgba(28, 27, 24, 0.42); /* 遮罩：浅色下也要压暗，只是别压死 */
+
+  --border-default: rgba(0, 0, 0, 0.12);
+  --border-strong: rgba(0, 0, 0, 0.18);
+  --border-code: rgba(0, 0, 0, 0.07);
+
+  /* 文字用深琥珀（对 canvas：--accent-text 6.8:1 / --accent-text-soft 6:1；
+     压在琥珀 wash 上（侧栏当前项计数、用例标签计数）也还能到 5:1。
+     深色下这两个值等于 --accent / --accent-soft） */
+  --accent-text: #7d4a00;
+  --accent-text-soft: #885200;
+  --accent-display: #b26a00; /* 44px 标题用：对 canvas 3.9:1，满足大字号 3:1 */
+
+  --accent-wash: rgba(245, 165, 36, 0.14);
+  --accent-wash-strong: rgba(245, 165, 36, 0.24);
+  --accent-line: rgba(200, 128, 15, 0.34);
+
+  --success-wash: rgba(26, 138, 98, 0.1);
+  --success-line: rgba(18, 112, 79, 0.28);
+  --danger-wash: rgba(209, 59, 52, 0.1);
+  --danger-line: rgba(179, 38, 30, 0.26);
+  --info-wash: rgba(47, 111, 208, 0.1);
+  --info-line: rgba(31, 87, 168, 0.26);
+
+  /* ---------------------------------------------------------------- 阴影 / 内阴影 / 焦点环
+     浅色下阴影要更淡（否则像脏了），内高光换成「白」、凹陷换成「浅灰」。 */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-2: 0 8px 24px -14px rgba(0, 0, 0, 0.18);
+  --shadow-3: 0 24px 64px -28px rgba(0, 0, 0, 0.26);
+  --inset-top: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  --inset-code: inset 0 1px 0 rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+  --ring-accent: 0 0 0 3px rgba(245, 165, 36, 0.3);
+  --ring-info: 0 0 0 3px rgba(47, 111, 208, 0.2);
+  --ring-danger: 0 0 0 3px rgba(209, 59, 52, 0.2);
+
+  /* 兼容别名里的那个「琥珀外发光」也要收一收，不然浅色按钮像糊了一圈橙 */
+  --glow-accent: 0 0 0 1px var(--accent-line), 0 12px 32px -18px rgba(200, 128, 15, 0.35);
+}

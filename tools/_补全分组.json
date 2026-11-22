@@ -1,0 +1,2093 @@
+[
+ {
+  "file": "教程/40-补全1-数组矩阵与前缀和.md",
+  "title": "补全1-数组矩阵与前缀和",
+  "categories": [
+   "数组/矩阵",
+   "前缀和",
+   "位运算"
+  ],
+  "problems": [
+   {
+    "no": "66",
+    "title": "加一",
+    "level": "Easy",
+    "category": "数组/矩阵",
+    "slug": "plus-one",
+    "hasStatement": true
+   },
+   {
+    "no": "136",
+    "title": "只出现一次的数字",
+    "level": "Easy",
+    "category": "数组/矩阵",
+    "slug": "single-number",
+    "hasStatement": true
+   },
+   {
+    "no": "190",
+    "title": "颠倒二进制位",
+    "level": "Easy",
+    "category": "位运算",
+    "slug": "reverse-bits",
+    "hasStatement": true
+   },
+   {
+    "no": "191",
+    "title": "位1的个数",
+    "level": "Easy",
+    "category": "位运算",
+    "slug": "number-of-1-bits",
+    "hasStatement": true
+   },
+   {
+    "no": "228",
+    "title": "汇总区间",
+    "level": "Easy",
+    "category": "数组/矩阵",
+    "slug": "summary-ranges",
+    "hasStatement": true
+   },
+   {
+    "no": "724",
+    "title": "寻找数组的中心下标",
+    "level": "Easy",
+    "category": "前缀和",
+    "slug": "find-pivot-index",
+    "hasStatement": true
+   },
+   {
+    "no": "面试题 08.06",
+    "title": "汉诺塔问题",
+    "level": "Easy",
+    "category": "数组/矩阵",
+    "slug": "hanota-lcci",
+    "hasStatement": true
+   },
+   {
+    "no": "29",
+    "title": "两数相除",
+    "level": "Medium",
+    "category": "位运算",
+    "slug": "divide-two-integers",
+    "hasStatement": true
+   },
+   {
+    "no": "48",
+    "title": "旋转图像",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "rotate-image",
+    "hasStatement": true
+   },
+   {
+    "no": "54",
+    "title": "螺旋矩阵",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "spiral-matrix",
+    "hasStatement": true
+   },
+   {
+    "no": "57",
+    "title": "插入区间",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "insert-interval",
+    "hasStatement": true
+   },
+   {
+    "no": "137",
+    "title": "只出现一次的数字 II",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "single-number-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "201",
+    "title": "数字范围按位与",
+    "level": "Medium",
+    "category": "位运算",
+    "slug": "bitwise-and-of-numbers-range",
+    "hasStatement": true
+   },
+   {
+    "no": "260",
+    "title": "只出现一次的数字 III",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "single-number-iii",
+    "hasStatement": true
+   },
+   {
+    "no": "274",
+    "title": "H 指数",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "h-index",
+    "hasStatement": true
+   },
+   {
+    "no": "280",
+    "title": "摆动排序",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "wiggle-sort",
+    "hasStatement": false
+   },
+   {
+    "no": "289",
+    "title": "生命游戏",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "game-of-life",
+    "hasStatement": true
+   },
+   {
+    "no": "393",
+    "title": "UTF-8 编码验证",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "utf-8-validation",
+    "hasStatement": true
+   },
+   {
+    "no": "406",
+    "title": "根据身高重建队列",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "queue-reconstruction-by-height",
+    "hasStatement": true
+   },
+   {
+    "no": "452",
+    "title": "用最少数量的箭引爆气球",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "minimum-number-of-arrows-to-burst-balloons",
+    "hasStatement": true
+   },
+   {
+    "no": "498",
+    "title": "对角线遍历",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "diagonal-traverse",
+    "hasStatement": true
+   },
+   {
+    "no": "665",
+    "title": "非递减数列",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "non-decreasing-array",
+    "hasStatement": true
+   },
+   {
+    "no": "807",
+    "title": "保持城市天际线",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "max-increase-to-keep-city-skyline",
+    "hasStatement": true
+   },
+   {
+    "no": "1109",
+    "title": "航班预订统计",
+    "level": "Medium",
+    "category": "前缀和",
+    "slug": "corporate-flight-bookings",
+    "hasStatement": true
+   },
+   {
+    "no": "面试题 01.07",
+    "title": "旋转矩阵",
+    "level": "Medium",
+    "category": "数组/矩阵",
+    "slug": "rotate-matrix-lcci",
+    "hasStatement": true
+   }
+  ]
+ },
+ {
+  "file": "教程/41-补全2-哈希表.md",
+  "title": "补全2-哈希表",
+  "categories": [
+   "哈希表"
+  ],
+  "problems": [
+   {
+    "no": "13",
+    "title": "罗马数字转整数",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "roman-to-integer",
+    "hasStatement": true
+   },
+   {
+    "no": "169",
+    "title": "多数元素",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "majority-element",
+    "hasStatement": true
+   },
+   {
+    "no": "202",
+    "title": "快乐数",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "happy-number",
+    "hasStatement": true
+   },
+   {
+    "no": "205",
+    "title": "同构字符串",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "isomorphic-strings",
+    "hasStatement": true
+   },
+   {
+    "no": "290",
+    "title": "单词规律",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "word-pattern",
+    "hasStatement": true
+   },
+   {
+    "no": "383",
+    "title": "赎金信",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "ransom-note",
+    "hasStatement": true
+   },
+   {
+    "no": "575",
+    "title": "分糖果",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "distribute-candies",
+    "hasStatement": true
+   },
+   {
+    "no": "697",
+    "title": "数组的度",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "degree-of-an-array",
+    "hasStatement": true
+   },
+   {
+    "no": "859",
+    "title": "亲密字符串",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "buddy-strings",
+    "hasStatement": true
+   },
+   {
+    "no": "1122",
+    "title": "数组的相对排序",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "relative-sort-array",
+    "hasStatement": true
+   },
+   {
+    "no": "1365",
+    "title": "有多少小于当前数字的数字",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "how-many-numbers-are-smaller-than-the-current-number",
+    "hasStatement": true
+   },
+   {
+    "no": "1624",
+    "title": "两个相同字符之间的最长子字符串",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "largest-substring-between-two-equal-characters",
+    "hasStatement": true
+   },
+   {
+    "no": "1636",
+    "title": "按照频率将数组升序排序",
+    "level": "Easy",
+    "category": "哈希表",
+    "slug": "sort-array-by-increasing-frequency",
+    "hasStatement": true
+   },
+   {
+    "no": "12",
+    "title": "整数转罗马数字",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "integer-to-roman",
+    "hasStatement": true
+   },
+   {
+    "no": "36",
+    "title": "有效的数独",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "valid-sudoku",
+    "hasStatement": true
+   },
+   {
+    "no": "73",
+    "title": "矩阵置零",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "set-matrix-zeroes",
+    "hasStatement": true
+   },
+   {
+    "no": "166",
+    "title": "分数到小数",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "fraction-to-recurring-decimal",
+    "hasStatement": true
+   },
+   {
+    "no": "380",
+    "title": "O(1) 时间插入、删除和获取随机元素",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "insert-delete-getrandom-o1",
+    "hasStatement": true
+   },
+   {
+    "no": "523",
+    "title": "连续的子数组和",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "continuous-subarray-sum",
+    "hasStatement": true
+   },
+   {
+    "no": "531",
+    "title": "孤独像素 I",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "lonely-pixel-i",
+    "hasStatement": false
+   },
+   {
+    "no": "533",
+    "title": "孤独像素 II",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "lonely-pixel-ii",
+    "hasStatement": false
+   },
+   {
+    "no": "648",
+    "title": "单词替换",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "replace-words",
+    "hasStatement": true
+   },
+   {
+    "no": "720",
+    "title": "词典中最长的单词",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "longest-word-in-dictionary",
+    "hasStatement": true
+   },
+   {
+    "no": "763",
+    "title": "划分字母区间",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "partition-labels",
+    "hasStatement": true
+   },
+   {
+    "no": "791",
+    "title": "自定义字符串排序",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "custom-sort-string",
+    "hasStatement": true
+   },
+   {
+    "no": "957",
+    "title": "N 天后的牢房",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "prison-cells-after-n-days",
+    "hasStatement": true
+   },
+   {
+    "no": "974",
+    "title": "和可被 K 整除的子数组",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "subarray-sums-divisible-by-k",
+    "hasStatement": true
+   },
+   {
+    "no": "1090",
+    "title": "受标签影响的最大值",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "largest-values-from-labels",
+    "hasStatement": true
+   },
+   {
+    "no": "1386",
+    "title": "安排电影院座位",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "cinema-seat-allocation",
+    "hasStatement": true
+   },
+   {
+    "no": "面试题 16.02",
+    "title": "单词频率",
+    "level": "Medium",
+    "category": "哈希表",
+    "slug": "words-frequency-lcci",
+    "hasStatement": true
+   },
+   {
+    "no": "41",
+    "title": "缺失的第一个正数",
+    "level": "Hard",
+    "category": "哈希表",
+    "slug": "first-missing-positive",
+    "hasStatement": true
+   },
+   {
+    "no": "149",
+    "title": "直线上最多的点数",
+    "level": "Hard",
+    "category": "哈希表",
+    "slug": "max-points-on-a-line",
+    "hasStatement": true
+   }
+  ]
+ },
+ {
+  "file": "教程/42-补全3-双指针与字符串.md",
+  "title": "补全3-双指针与字符串",
+  "categories": [
+   "双指针",
+   "字符串"
+  ],
+  "problems": [
+   {
+    "no": "14",
+    "title": "最长公共前缀",
+    "level": "Easy",
+    "category": "字符串",
+    "slug": "longest-common-prefix",
+    "hasStatement": true
+   },
+   {
+    "no": "26",
+    "title": "删除有序数组中的重复项",
+    "level": "Easy",
+    "category": "双指针",
+    "slug": "remove-duplicates-from-sorted-array",
+    "hasStatement": true
+   },
+   {
+    "no": "27",
+    "title": "移除元素",
+    "level": "Easy",
+    "category": "双指针",
+    "slug": "remove-element",
+    "hasStatement": true
+   },
+   {
+    "no": "58",
+    "title": "最后一个单词的长度",
+    "level": "Easy",
+    "category": "字符串",
+    "slug": "length-of-last-word",
+    "hasStatement": true
+   },
+   {
+    "no": "67",
+    "title": "二进制求和",
+    "level": "Easy",
+    "category": "字符串",
+    "slug": "add-binary",
+    "hasStatement": true
+   },
+   {
+    "no": "88",
+    "title": "合并两个有序数组",
+    "level": "Easy",
+    "category": "双指针",
+    "slug": "merge-sorted-array",
+    "hasStatement": true
+   },
+   {
+    "no": "125",
+    "title": "验证回文串",
+    "level": "Easy",
+    "category": "双指针",
+    "slug": "valid-palindrome",
+    "hasStatement": true
+   },
+   {
+    "no": "283",
+    "title": "移动零",
+    "level": "Easy",
+    "category": "双指针",
+    "slug": "move-zeroes",
+    "hasStatement": true
+   },
+   {
+    "no": "345",
+    "title": "反转字符串中的元音字母",
+    "level": "Easy",
+    "category": "双指针",
+    "slug": "reverse-vowels-of-a-string",
+    "hasStatement": true
+   },
+   {
+    "no": "482",
+    "title": "密钥格式化",
+    "level": "Easy",
+    "category": "字符串",
+    "slug": "license-key-formatting",
+    "hasStatement": true
+   },
+   {
+    "no": "680",
+    "title": "验证回文串 II",
+    "level": "Easy",
+    "category": "双指针",
+    "slug": "valid-palindrome-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "796",
+    "title": "旋转字符串",
+    "level": "Easy",
+    "category": "字符串",
+    "slug": "rotate-string",
+    "hasStatement": true
+   },
+   {
+    "no": "905",
+    "title": "按奇偶排序数组",
+    "level": "Easy",
+    "category": "双指针",
+    "slug": "sort-array-by-parity",
+    "hasStatement": true
+   },
+   {
+    "no": "1446",
+    "title": "连续字符",
+    "level": "Easy",
+    "category": "字符串",
+    "slug": "consecutive-characters",
+    "hasStatement": true
+   },
+   {
+    "no": "6",
+    "title": "Z 字形变换",
+    "level": "Medium",
+    "category": "字符串",
+    "slug": "zigzag-conversion",
+    "hasStatement": true
+   },
+   {
+    "no": "8",
+    "title": "字符串转换整数 (atoi)",
+    "level": "Medium",
+    "category": "字符串",
+    "slug": "string-to-integer-atoi",
+    "hasStatement": true
+   },
+   {
+    "no": "16",
+    "title": "最接近的三数之和",
+    "level": "Medium",
+    "category": "双指针",
+    "slug": "3sum-closest",
+    "hasStatement": true
+   },
+   {
+    "no": "31",
+    "title": "下一个排列",
+    "level": "Medium",
+    "category": "双指针",
+    "slug": "next-permutation",
+    "hasStatement": true
+   },
+   {
+    "no": "43",
+    "title": "字符串相乘",
+    "level": "Medium",
+    "category": "字符串",
+    "slug": "multiply-strings",
+    "hasStatement": true
+   },
+   {
+    "no": "75",
+    "title": "颜色分类",
+    "level": "Medium",
+    "category": "双指针",
+    "slug": "sort-colors",
+    "hasStatement": true
+   },
+   {
+    "no": "80",
+    "title": "删除有序数组中的重复项 II",
+    "level": "Medium",
+    "category": "双指针",
+    "slug": "remove-duplicates-from-sorted-array-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "151",
+    "title": "反转字符串中的单词",
+    "level": "Medium",
+    "category": "双指针",
+    "slug": "reverse-words-in-a-string",
+    "hasStatement": true
+   },
+   {
+    "no": "179",
+    "title": "最大数",
+    "level": "Medium",
+    "category": "字符串",
+    "slug": "largest-number",
+    "hasStatement": true
+   },
+   {
+    "no": "186",
+    "title": "反转字符串中的单词 II",
+    "level": "Medium",
+    "category": "双指针",
+    "slug": "reverse-words-in-a-string-ii",
+    "hasStatement": false
+   },
+   {
+    "no": "189",
+    "title": "轮转数组",
+    "level": "Medium",
+    "category": "双指针",
+    "slug": "rotate-array",
+    "hasStatement": true
+   },
+   {
+    "no": "318",
+    "title": "最大单词长度乘积",
+    "level": "Medium",
+    "category": "字符串",
+    "slug": "maximum-product-of-word-lengths",
+    "hasStatement": true
+   },
+   {
+    "no": "524",
+    "title": "通过删除字母匹配到字典里最长单词",
+    "level": "Medium",
+    "category": "双指针",
+    "slug": "longest-word-in-dictionary-through-deleting",
+    "hasStatement": true
+   },
+   {
+    "no": "640",
+    "title": "求解方程",
+    "level": "Medium",
+    "category": "字符串",
+    "slug": "solve-the-equation",
+    "hasStatement": true
+   },
+   {
+    "no": "809",
+    "title": "情感丰富的文字",
+    "level": "Medium",
+    "category": "双指针",
+    "slug": "expressive-words",
+    "hasStatement": true
+   },
+   {
+    "no": "870",
+    "title": "优势洗牌",
+    "level": "Medium",
+    "category": "双指针",
+    "slug": "advantage-shuffle",
+    "hasStatement": true
+   },
+   {
+    "no": "881",
+    "title": "救生艇",
+    "level": "Medium",
+    "category": "双指针",
+    "slug": "boats-to-save-people",
+    "hasStatement": true
+   },
+   {
+    "no": "面试题 01.05",
+    "title": "一次编辑",
+    "level": "Medium",
+    "category": "双指针",
+    "slug": "one-away-lcci",
+    "hasStatement": true
+   },
+   {
+    "no": "68",
+    "title": "文本左右对齐",
+    "level": "Hard",
+    "category": "字符串",
+    "slug": "text-justification",
+    "hasStatement": true
+   }
+  ]
+ },
+ {
+  "file": "教程/43-补全4-滑动窗口与栈队列.md",
+  "title": "补全4-滑动窗口与栈队列",
+  "categories": [
+   "滑动窗口",
+   "单调栈/单调队列",
+   "栈/队列"
+  ],
+  "problems": [
+   {
+    "no": "219",
+    "title": "存在重复元素 II",
+    "level": "Easy",
+    "category": "滑动窗口",
+    "slug": "contains-duplicate-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "71",
+    "title": "简化路径",
+    "level": "Medium",
+    "category": "栈/队列",
+    "slug": "simplify-path",
+    "hasStatement": true
+   },
+   {
+    "no": "150",
+    "title": "逆波兰表达式求值",
+    "level": "Medium",
+    "category": "栈/队列",
+    "slug": "evaluate-reverse-polish-notation",
+    "hasStatement": true
+   },
+   {
+    "no": "187",
+    "title": "重复的DNA序列",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "repeated-dna-sequences",
+    "hasStatement": true
+   },
+   {
+    "no": "340",
+    "title": "至多包含 K 个不同字符的最长子串",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "longest-substring-with-at-most-k-distinct-characters",
+    "hasStatement": false
+   },
+   {
+    "no": "395",
+    "title": "至少有 K 个重复字符的最长子串",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "longest-substring-with-at-least-k-repeating-characters",
+    "hasStatement": true
+   },
+   {
+    "no": "402",
+    "title": "移掉 K 位数字",
+    "level": "Medium",
+    "category": "单调栈/单调队列",
+    "slug": "remove-k-digits",
+    "hasStatement": true
+   },
+   {
+    "no": "424",
+    "title": "替换后的最长重复字符",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "longest-repeating-character-replacement",
+    "hasStatement": true
+   },
+   {
+    "no": "438",
+    "title": "找到字符串中所有字母异位词",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "find-all-anagrams-in-a-string",
+    "hasStatement": true
+   },
+   {
+    "no": "503",
+    "title": "下一个更大元素 II",
+    "level": "Medium",
+    "category": "单调栈/单调队列",
+    "slug": "next-greater-element-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "654",
+    "title": "最大二叉树",
+    "level": "Medium",
+    "category": "单调栈/单调队列",
+    "slug": "maximum-binary-tree",
+    "hasStatement": true
+   },
+   {
+    "no": "658",
+    "title": "找到 K 个最接近的元素",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "find-k-closest-elements",
+    "hasStatement": true
+   },
+   {
+    "no": "713",
+    "title": "乘积小于 K 的子数组",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "subarray-product-less-than-k",
+    "hasStatement": true
+   },
+   {
+    "no": "918",
+    "title": "环形子数组的最大和",
+    "level": "Medium",
+    "category": "单调栈/单调队列",
+    "slug": "maximum-sum-circular-subarray",
+    "hasStatement": true
+   },
+   {
+    "no": "1006",
+    "title": "笨阶乘",
+    "level": "Medium",
+    "category": "栈/队列",
+    "slug": "clumsy-factorial",
+    "hasStatement": true
+   },
+   {
+    "no": "1100",
+    "title": "长度为 K 的无重复字符子串",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "find-k-length-substrings-with-no-repeated-characters",
+    "hasStatement": false
+   },
+   {
+    "no": "1151",
+    "title": "最少交换次数来组合所有的 1",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "minimum-swaps-to-group-all-1s-together",
+    "hasStatement": false
+   },
+   {
+    "no": "1190",
+    "title": "反转每对括号间的子串",
+    "level": "Medium",
+    "category": "栈/队列",
+    "slug": "reverse-substrings-between-each-pair-of-parentheses",
+    "hasStatement": true
+   },
+   {
+    "no": "1208",
+    "title": "尽可能使字符串相等",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "get-equal-substrings-within-budget",
+    "hasStatement": true
+   },
+   {
+    "no": "1248",
+    "title": "统计「优美子数组」",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "count-number-of-nice-subarrays",
+    "hasStatement": true
+   },
+   {
+    "no": "1249",
+    "title": "移除无效的括号",
+    "level": "Medium",
+    "category": "栈/队列",
+    "slug": "minimum-remove-to-make-valid-parentheses",
+    "hasStatement": true
+   },
+   {
+    "no": "1358",
+    "title": "包含所有三种字符的子字符串数目",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "number-of-substrings-containing-all-three-characters",
+    "hasStatement": true
+   },
+   {
+    "no": "1423",
+    "title": "可获得的最大点数",
+    "level": "Medium",
+    "category": "滑动窗口",
+    "slug": "maximum-points-you-can-obtain-from-cards",
+    "hasStatement": true
+   },
+   {
+    "no": "30",
+    "title": "串联所有单词的子串",
+    "level": "Hard",
+    "category": "滑动窗口",
+    "slug": "substring-with-concatenation-of-all-words",
+    "hasStatement": true
+   },
+   {
+    "no": "76",
+    "title": "最小覆盖子串",
+    "level": "Hard",
+    "category": "滑动窗口",
+    "slug": "minimum-window-substring",
+    "hasStatement": true
+   },
+   {
+    "no": "85",
+    "title": "最大矩形",
+    "level": "Hard",
+    "category": "单调栈/单调队列",
+    "slug": "maximal-rectangle",
+    "hasStatement": true
+   },
+   {
+    "no": "239",
+    "title": "滑动窗口最大值",
+    "level": "Hard",
+    "category": "滑动窗口",
+    "slug": "sliding-window-maximum",
+    "hasStatement": true
+   },
+   {
+    "no": "895",
+    "title": "最大频率栈",
+    "level": "Hard",
+    "category": "栈/队列",
+    "slug": "maximum-frequency-stack",
+    "hasStatement": true
+   },
+   {
+    "no": "1106",
+    "title": "解析布尔表达式",
+    "level": "Hard",
+    "category": "栈/队列",
+    "slug": "parsing-a-boolean-expression",
+    "hasStatement": true
+   }
+  ]
+ },
+ {
+  "file": "教程/44-补全5-链表与堆.md",
+  "title": "补全5-链表与堆",
+  "categories": [
+   "链表",
+   "堆/优先队列"
+  ],
+  "problems": [
+   {
+    "no": "83",
+    "title": "删除排序链表中的重复元素",
+    "level": "Easy",
+    "category": "链表",
+    "slug": "remove-duplicates-from-sorted-list",
+    "hasStatement": true
+   },
+   {
+    "no": "160",
+    "title": "相交链表",
+    "level": "Easy",
+    "category": "链表",
+    "slug": "intersection-of-two-linked-lists",
+    "hasStatement": true
+   },
+   {
+    "no": "234",
+    "title": "回文链表",
+    "level": "Easy",
+    "category": "链表",
+    "slug": "palindrome-linked-list",
+    "hasStatement": true
+   },
+   {
+    "no": "2",
+    "title": "两数相加",
+    "level": "Medium",
+    "category": "链表",
+    "slug": "add-two-numbers",
+    "hasStatement": true
+   },
+   {
+    "no": "24",
+    "title": "两两交换链表中的节点",
+    "level": "Medium",
+    "category": "链表",
+    "slug": "swap-nodes-in-pairs",
+    "hasStatement": true
+   },
+   {
+    "no": "61",
+    "title": "旋转链表",
+    "level": "Medium",
+    "category": "链表",
+    "slug": "rotate-list",
+    "hasStatement": true
+   },
+   {
+    "no": "82",
+    "title": "删除排序链表中的重复元素 II",
+    "level": "Medium",
+    "category": "链表",
+    "slug": "remove-duplicates-from-sorted-list-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "86",
+    "title": "分隔链表",
+    "level": "Medium",
+    "category": "链表",
+    "slug": "partition-list",
+    "hasStatement": true
+   },
+   {
+    "no": "92",
+    "title": "反转链表 II",
+    "level": "Medium",
+    "category": "链表",
+    "slug": "reverse-linked-list-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "114",
+    "title": "二叉树展开为链表",
+    "level": "Medium",
+    "category": "链表",
+    "slug": "flatten-binary-tree-to-linked-list",
+    "hasStatement": true
+   },
+   {
+    "no": "117",
+    "title": "填充每个节点的下一个右侧节点指针 II",
+    "level": "Medium",
+    "category": "链表",
+    "slug": "populating-next-right-pointers-in-each-node-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "138",
+    "title": "随机链表的复制",
+    "level": "Medium",
+    "category": "链表",
+    "slug": "copy-list-with-random-pointer",
+    "hasStatement": true
+   },
+   {
+    "no": "373",
+    "title": "查找和最小的 K 对数字",
+    "level": "Medium",
+    "category": "堆/优先队列",
+    "slug": "find-k-pairs-with-smallest-sums",
+    "hasStatement": true
+   },
+   {
+    "no": "451",
+    "title": "根据字符出现频率排序",
+    "level": "Medium",
+    "category": "堆/优先队列",
+    "slug": "sort-characters-by-frequency",
+    "hasStatement": true
+   },
+   {
+    "no": "621",
+    "title": "任务调度器",
+    "level": "Medium",
+    "category": "堆/优先队列",
+    "slug": "task-scheduler",
+    "hasStatement": true
+   },
+   {
+    "no": "622",
+    "title": "设计循环队列",
+    "level": "Medium",
+    "category": "链表",
+    "slug": "design-circular-queue",
+    "hasStatement": true
+   },
+   {
+    "no": "725",
+    "title": "分隔链表",
+    "level": "Medium",
+    "category": "链表",
+    "slug": "split-linked-list-in-parts",
+    "hasStatement": true
+   },
+   {
+    "no": "767",
+    "title": "重构字符串",
+    "level": "Medium",
+    "category": "堆/优先队列",
+    "slug": "reorganize-string",
+    "hasStatement": true
+   },
+   {
+    "no": "1094",
+    "title": "拼车",
+    "level": "Medium",
+    "category": "堆/优先队列",
+    "slug": "car-pooling",
+    "hasStatement": true
+   },
+   {
+    "no": "25",
+    "title": "K 个一组翻转链表",
+    "level": "Hard",
+    "category": "链表",
+    "slug": "reverse-nodes-in-k-group",
+    "hasStatement": true
+   },
+   {
+    "no": "460",
+    "title": "LFU 缓存",
+    "level": "Hard",
+    "category": "链表",
+    "slug": "lfu-cache",
+    "hasStatement": true
+   }
+  ]
+ },
+ {
+  "file": "教程/45-补全6-二叉树与树.md",
+  "title": "补全6-二叉树与树",
+  "categories": [
+   "二叉树/树"
+  ],
+  "problems": [
+   {
+    "no": "100",
+    "title": "相同的树",
+    "level": "Easy",
+    "category": "二叉树/树",
+    "slug": "same-tree",
+    "hasStatement": true
+   },
+   {
+    "no": "101",
+    "title": "对称二叉树",
+    "level": "Easy",
+    "category": "二叉树/树",
+    "slug": "symmetric-tree",
+    "hasStatement": true
+   },
+   {
+    "no": "108",
+    "title": "将有序数组转换为二叉搜索树",
+    "level": "Easy",
+    "category": "二叉树/树",
+    "slug": "convert-sorted-array-to-binary-search-tree",
+    "hasStatement": true
+   },
+   {
+    "no": "112",
+    "title": "路径总和",
+    "level": "Easy",
+    "category": "二叉树/树",
+    "slug": "path-sum",
+    "hasStatement": true
+   },
+   {
+    "no": "530",
+    "title": "二叉搜索树的最小绝对差",
+    "level": "Easy",
+    "category": "二叉树/树",
+    "slug": "minimum-absolute-difference-in-bst",
+    "hasStatement": true
+   },
+   {
+    "no": "543",
+    "title": "二叉树的直径",
+    "level": "Easy",
+    "category": "二叉树/树",
+    "slug": "diameter-of-binary-tree",
+    "hasStatement": true
+   },
+   {
+    "no": "572",
+    "title": "另一棵树的子树",
+    "level": "Easy",
+    "category": "二叉树/树",
+    "slug": "subtree-of-another-tree",
+    "hasStatement": true
+   },
+   {
+    "no": "637",
+    "title": "二叉树的层平均值",
+    "level": "Easy",
+    "category": "二叉树/树",
+    "slug": "average-of-levels-in-binary-tree",
+    "hasStatement": true
+   },
+   {
+    "no": "99",
+    "title": "恢复二叉搜索树",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "recover-binary-search-tree",
+    "hasStatement": true
+   },
+   {
+    "no": "113",
+    "title": "路径总和 II",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "path-sum-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "129",
+    "title": "求根节点到叶节点数字之和",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "sum-root-to-leaf-numbers",
+    "hasStatement": true
+   },
+   {
+    "no": "173",
+    "title": "二叉搜索树迭代器",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "binary-search-tree-iterator",
+    "hasStatement": true
+   },
+   {
+    "no": "199",
+    "title": "二叉树的右视图",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "binary-tree-right-side-view",
+    "hasStatement": true
+   },
+   {
+    "no": "222",
+    "title": "完全二叉树的节点个数",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "count-complete-tree-nodes",
+    "hasStatement": true
+   },
+   {
+    "no": "230",
+    "title": "二叉搜索树中第 K 小的元素",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "kth-smallest-element-in-a-bst",
+    "hasStatement": true
+   },
+   {
+    "no": "337",
+    "title": "打家劫舍 III",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "house-robber-iii",
+    "hasStatement": true
+   },
+   {
+    "no": "427",
+    "title": "建立四叉树",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "construct-quad-tree",
+    "hasStatement": true
+   },
+   {
+    "no": "437",
+    "title": "路径总和 III",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "path-sum-iii",
+    "hasStatement": true
+   },
+   {
+    "no": "450",
+    "title": "删除二叉搜索树中的节点",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "delete-node-in-a-bst",
+    "hasStatement": true
+   },
+   {
+    "no": "652",
+    "title": "寻找重复的子树",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "find-duplicate-subtrees",
+    "hasStatement": true
+   },
+   {
+    "no": "663",
+    "title": "均匀树划分",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "equal-tree-partition",
+    "hasStatement": false
+   },
+   {
+    "no": "687",
+    "title": "最长同值路径",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "longest-univalue-path",
+    "hasStatement": true
+   },
+   {
+    "no": "690",
+    "title": "员工的重要性",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "employee-importance",
+    "hasStatement": true
+   },
+   {
+    "no": "1080",
+    "title": "根到叶路径上的不足节点",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "insufficient-nodes-in-root-to-leaf-paths",
+    "hasStatement": true
+   },
+   {
+    "no": "1145",
+    "title": "二叉树着色游戏",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "binary-tree-coloring-game",
+    "hasStatement": true
+   },
+   {
+    "no": "1302",
+    "title": "层数最深叶子节点的和",
+    "level": "Medium",
+    "category": "二叉树/树",
+    "slug": "deepest-leaves-sum",
+    "hasStatement": true
+   }
+  ]
+ },
+ {
+  "file": "教程/46-补全7-图与网格.md",
+  "title": "补全7-图与网格",
+  "categories": [
+   "图/DFS/BFS",
+   "其他"
+  ],
+  "problems": [
+   {
+    "no": "463",
+    "title": "岛屿的周长",
+    "level": "Easy",
+    "category": "图/DFS/BFS",
+    "slug": "island-perimeter",
+    "hasStatement": true
+   },
+   {
+    "no": "733",
+    "title": "图像渲染",
+    "level": "Easy",
+    "category": "图/DFS/BFS",
+    "slug": "flood-fill",
+    "hasStatement": true
+   },
+   {
+    "no": "剑指 Offer 04",
+    "title": "二维数组中的查找",
+    "level": "Easy",
+    "category": "其他",
+    "slug": "",
+    "hasStatement": true
+   },
+   {
+    "no": "剑指 Offer 10- II",
+    "title": "青蛙跳台阶问题",
+    "level": "Easy",
+    "category": "其他",
+    "slug": "",
+    "hasStatement": true
+   },
+   {
+    "no": "剑指 Offer 29",
+    "title": "顺时针打印矩阵",
+    "level": "Easy",
+    "category": "其他",
+    "slug": "",
+    "hasStatement": true
+   },
+   {
+    "no": "剑指 Offer 61",
+    "title": "扑克牌中的顺子",
+    "level": "Easy",
+    "category": "其他",
+    "slug": "",
+    "hasStatement": true
+   },
+   {
+    "no": "130",
+    "title": "被围绕的区域",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "surrounded-regions",
+    "hasStatement": true
+   },
+   {
+    "no": "365",
+    "title": "水壶问题",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "water-and-jug-problem",
+    "hasStatement": true
+   },
+   {
+    "no": "399",
+    "title": "除法求值",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "evaluate-division",
+    "hasStatement": true
+   },
+   {
+    "no": "419",
+    "title": "棋盘上的战舰",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "battleships-in-a-board",
+    "hasStatement": true
+   },
+   {
+    "no": "433",
+    "title": "最小基因变化",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "minimum-genetic-mutation",
+    "hasStatement": true
+   },
+   {
+    "no": "529",
+    "title": "扫雷游戏",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "minesweeper",
+    "hasStatement": true
+   },
+   {
+    "no": "547",
+    "title": "省份数量",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "number-of-provinces",
+    "hasStatement": true
+   },
+   {
+    "no": "694",
+    "title": "不同岛屿的数量",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "number-of-distinct-islands",
+    "hasStatement": false
+   },
+   {
+    "no": "743",
+    "title": "网络延迟时间",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "network-delay-time",
+    "hasStatement": true
+   },
+   {
+    "no": "841",
+    "title": "钥匙和房间",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "keys-and-rooms",
+    "hasStatement": true
+   },
+   {
+    "no": "909",
+    "title": "蛇梯棋",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "snakes-and-ladders",
+    "hasStatement": true
+   },
+   {
+    "no": "934",
+    "title": "最短的桥",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "shortest-bridge",
+    "hasStatement": true
+   },
+   {
+    "no": "1020",
+    "title": "飞地的数量",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "number-of-enclaves",
+    "hasStatement": true
+   },
+   {
+    "no": "1091",
+    "title": "二进制矩阵中的最短路径",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "shortest-path-in-binary-matrix",
+    "hasStatement": true
+   },
+   {
+    "no": "1102",
+    "title": "得分最高的路径",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "path-with-maximum-minimum-value",
+    "hasStatement": false
+   },
+   {
+    "no": "1129",
+    "title": "颜色交替的最短路径",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "shortest-path-with-alternating-colors",
+    "hasStatement": true
+   },
+   {
+    "no": "1233",
+    "title": "删除子文件夹",
+    "level": "Medium",
+    "category": "图/DFS/BFS",
+    "slug": "remove-sub-folders-from-the-filesystem",
+    "hasStatement": true
+   },
+   {
+    "no": "补充题21",
+    "title": "字符串相减",
+    "level": "Medium",
+    "category": "其他",
+    "slug": "",
+    "hasStatement": false
+   },
+   {
+    "no": "301",
+    "title": "删除无效的括号",
+    "level": "Hard",
+    "category": "图/DFS/BFS",
+    "slug": "remove-invalid-parentheses",
+    "hasStatement": true
+   },
+   {
+    "no": "305",
+    "title": "岛屿数量 II",
+    "level": "Hard",
+    "category": "图/DFS/BFS",
+    "slug": "number-of-islands-ii",
+    "hasStatement": false
+   },
+   {
+    "no": "332",
+    "title": "重新安排行程",
+    "level": "Hard",
+    "category": "图/DFS/BFS",
+    "slug": "reconstruct-itinerary",
+    "hasStatement": true
+   },
+   {
+    "no": "685",
+    "title": "冗余连接 II",
+    "level": "Hard",
+    "category": "图/DFS/BFS",
+    "slug": "redundant-connection-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "815",
+    "title": "公交路线",
+    "level": "Hard",
+    "category": "图/DFS/BFS",
+    "slug": "bus-routes",
+    "hasStatement": true
+   },
+   {
+    "no": "1345",
+    "title": "跳跃游戏 IV",
+    "level": "Hard",
+    "category": "图/DFS/BFS",
+    "slug": "jump-game-iv",
+    "hasStatement": true
+   },
+   {
+    "no": "剑指 Offer 51",
+    "title": "数组中的逆序对",
+    "level": "Hard",
+    "category": "其他",
+    "slug": "",
+    "hasStatement": true
+   }
+  ]
+ },
+ {
+  "file": "教程/47-补全8-回溯二分与贪心.md",
+  "title": "补全8-回溯二分与贪心",
+  "categories": [
+   "回溯",
+   "二分查找",
+   "贪心"
+  ],
+  "problems": [
+   {
+    "no": "69",
+    "title": "x 的平方根 ",
+    "level": "Easy",
+    "category": "二分查找",
+    "slug": "sqrtx",
+    "hasStatement": true
+   },
+   {
+    "no": "349",
+    "title": "两个数组的交集",
+    "level": "Easy",
+    "category": "二分查找",
+    "slug": "intersection-of-two-arrays",
+    "hasStatement": true
+   },
+   {
+    "no": "374",
+    "title": "猜数字大小",
+    "level": "Easy",
+    "category": "二分查找",
+    "slug": "guess-number-higher-or-lower",
+    "hasStatement": true
+   },
+   {
+    "no": "74",
+    "title": "搜索二维矩阵",
+    "level": "Medium",
+    "category": "二分查找",
+    "slug": "search-a-2d-matrix",
+    "hasStatement": true
+   },
+   {
+    "no": "77",
+    "title": "组合",
+    "level": "Medium",
+    "category": "回溯",
+    "slug": "combinations",
+    "hasStatement": true
+   },
+   {
+    "no": "93",
+    "title": "复原 IP 地址",
+    "level": "Medium",
+    "category": "回溯",
+    "slug": "restore-ip-addresses",
+    "hasStatement": true
+   },
+   {
+    "no": "167",
+    "title": "两数之和 II - 输入有序数组",
+    "level": "Medium",
+    "category": "二分查找",
+    "slug": "two-sum-ii-input-array-is-sorted",
+    "hasStatement": true
+   },
+   {
+    "no": "240",
+    "title": "搜索二维矩阵 II",
+    "level": "Medium",
+    "category": "二分查找",
+    "slug": "search-a-2d-matrix-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "287",
+    "title": "寻找重复数",
+    "level": "Medium",
+    "category": "二分查找",
+    "slug": "find-the-duplicate-number",
+    "hasStatement": true
+   },
+   {
+    "no": "306",
+    "title": "累加数",
+    "level": "Medium",
+    "category": "回溯",
+    "slug": "additive-number",
+    "hasStatement": true
+   },
+   {
+    "no": "400",
+    "title": "第 N 位数字",
+    "level": "Medium",
+    "category": "二分查找",
+    "slug": "nth-digit",
+    "hasStatement": true
+   },
+   {
+    "no": "436",
+    "title": "寻找右区间",
+    "level": "Medium",
+    "category": "二分查找",
+    "slug": "find-right-interval",
+    "hasStatement": true
+   },
+   {
+    "no": "475",
+    "title": "供暖器",
+    "level": "Medium",
+    "category": "二分查找",
+    "slug": "heaters",
+    "hasStatement": true
+   },
+   {
+    "no": "497",
+    "title": "非重叠矩形中的随机点",
+    "level": "Medium",
+    "category": "二分查找",
+    "slug": "random-point-in-non-overlapping-rectangles",
+    "hasStatement": true
+   },
+   {
+    "no": "611",
+    "title": "有效三角形的个数",
+    "level": "Medium",
+    "category": "二分查找",
+    "slug": "valid-triangle-number",
+    "hasStatement": true
+   },
+   {
+    "no": "670",
+    "title": "最大交换",
+    "level": "Medium",
+    "category": "贪心",
+    "slug": "maximum-swap",
+    "hasStatement": true
+   },
+   {
+    "no": "784",
+    "title": "字母大小写全排列",
+    "level": "Medium",
+    "category": "回溯",
+    "slug": "letter-case-permutation",
+    "hasStatement": true
+   },
+   {
+    "no": "875",
+    "title": "爱吃香蕉的珂珂",
+    "level": "Medium",
+    "category": "二分查找",
+    "slug": "koko-eating-bananas",
+    "hasStatement": true
+   },
+   {
+    "no": "1239",
+    "title": "串联字符串的最大长度",
+    "level": "Medium",
+    "category": "回溯",
+    "slug": "maximum-length-of-a-concatenated-string-with-unique-characters",
+    "hasStatement": true
+   },
+   {
+    "no": "1552",
+    "title": "两球之间的磁力",
+    "level": "Medium",
+    "category": "二分查找",
+    "slug": "magnetic-force-between-two-balls",
+    "hasStatement": true
+   },
+   {
+    "no": "面试题 16.18",
+    "title": "模式匹配",
+    "level": "Medium",
+    "category": "回溯",
+    "slug": "pattern-matching-lcci",
+    "hasStatement": true
+   },
+   {
+    "no": "4",
+    "title": "寻找两个正序数组的中位数",
+    "level": "Hard",
+    "category": "二分查找",
+    "slug": "median-of-two-sorted-arrays",
+    "hasStatement": true
+   },
+   {
+    "no": "52",
+    "title": "N 皇后 II",
+    "level": "Hard",
+    "category": "回溯",
+    "slug": "n-queens-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "212",
+    "title": "单词搜索 II",
+    "level": "Hard",
+    "category": "回溯",
+    "slug": "word-search-ii",
+    "hasStatement": true
+   }
+  ]
+ },
+ {
+  "file": "教程/48-补全9-动态规划.md",
+  "title": "补全9-动态规划",
+  "categories": [
+   "动态规划",
+   "数学"
+  ],
+  "problems": [
+   {
+    "no": "9",
+    "title": "回文数",
+    "level": "Easy",
+    "category": "数学",
+    "slug": "palindrome-number",
+    "hasStatement": true
+   },
+   {
+    "no": "118",
+    "title": "杨辉三角",
+    "level": "Easy",
+    "category": "动态规划",
+    "slug": "pascals-triangle",
+    "hasStatement": true
+   },
+   {
+    "no": "392",
+    "title": "判断子序列",
+    "level": "Easy",
+    "category": "动态规划",
+    "slug": "is-subsequence",
+    "hasStatement": true
+   },
+   {
+    "no": "509",
+    "title": "斐波那契数",
+    "level": "Easy",
+    "category": "动态规划",
+    "slug": "fibonacci-number",
+    "hasStatement": true
+   },
+   {
+    "no": "50",
+    "title": "Pow(x, n)",
+    "level": "Medium",
+    "category": "数学",
+    "slug": "powx-n",
+    "hasStatement": true
+   },
+   {
+    "no": "91",
+    "title": "解码方法",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "decode-ways",
+    "hasStatement": true
+   },
+   {
+    "no": "97",
+    "title": "交错字符串",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "interleaving-string",
+    "hasStatement": true
+   },
+   {
+    "no": "120",
+    "title": "三角形最小路径和",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "triangle",
+    "hasStatement": true
+   },
+   {
+    "no": "131",
+    "title": "分割回文串",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "palindrome-partitioning",
+    "hasStatement": true
+   },
+   {
+    "no": "139",
+    "title": "单词拆分",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "word-break",
+    "hasStatement": true
+   },
+   {
+    "no": "152",
+    "title": "乘积最大子数组",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "maximum-product-subarray",
+    "hasStatement": true
+   },
+   {
+    "no": "172",
+    "title": "阶乘后的零",
+    "level": "Medium",
+    "category": "数学",
+    "slug": "factorial-trailing-zeroes",
+    "hasStatement": true
+   },
+   {
+    "no": "241",
+    "title": "为运算表达式设计优先级",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "different-ways-to-add-parentheses",
+    "hasStatement": true
+   },
+   {
+    "no": "361",
+    "title": "轰炸敌人",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "bomb-enemy",
+    "hasStatement": false
+   },
+   {
+    "no": "396",
+    "title": "旋转函数",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "rotate-function",
+    "hasStatement": true
+   },
+   {
+    "no": "486",
+    "title": "预测赢家",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "predict-the-winner",
+    "hasStatement": true
+   },
+   {
+    "no": "494",
+    "title": "目标和",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "target-sum",
+    "hasStatement": true
+   },
+   {
+    "no": "516",
+    "title": "最长回文子序列",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "longest-palindromic-subsequence",
+    "hasStatement": true
+   },
+   {
+    "no": "518",
+    "title": "零钱兑换 II",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "coin-change-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "593",
+    "title": "有效的正方形",
+    "level": "Medium",
+    "category": "数学",
+    "slug": "valid-square",
+    "hasStatement": true
+   },
+   {
+    "no": "647",
+    "title": "回文子串",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "palindromic-substrings",
+    "hasStatement": true
+   },
+   {
+    "no": "650",
+    "title": "两个键的键盘",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "2-keys-keyboard",
+    "hasStatement": true
+   },
+   {
+    "no": "678",
+    "title": "有效的括号字符串",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "valid-parenthesis-string",
+    "hasStatement": true
+   },
+   {
+    "no": "1230",
+    "title": "抛掷硬币",
+    "level": "Medium",
+    "category": "动态规划",
+    "slug": "toss-strange-coins",
+    "hasStatement": false
+   },
+   {
+    "no": "132",
+    "title": "分割回文串 II",
+    "level": "Hard",
+    "category": "动态规划",
+    "slug": "palindrome-partitioning-ii",
+    "hasStatement": true
+   },
+   {
+    "no": "329",
+    "title": "矩阵中的最长递增路径",
+    "level": "Hard",
+    "category": "动态规划",
+    "slug": "longest-increasing-path-in-a-matrix",
+    "hasStatement": true
+   },
+   {
+    "no": "741",
+    "title": "摘樱桃",
+    "level": "Hard",
+    "category": "动态规划",
+    "slug": "cherry-pickup",
+    "hasStatement": true
+   },
+   {
+    "no": "1235",
+    "title": "规划兼职工作",
+    "level": "Hard",
+    "category": "动态规划",
+    "slug": "maximum-profit-in-job-scheduling",
+    "hasStatement": true
+   },
+   {
+    "no": "面试题 17.24",
+    "title": "最大子矩阵",
+    "level": "Hard",
+    "category": "动态规划",
+    "slug": "max-submatrix-lcci",
+    "hasStatement": true
+   }
+  ]
+ }
+]

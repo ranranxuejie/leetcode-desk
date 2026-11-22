@@ -1,0 +1,167 @@
+{
+ "withStatement": [
+  {
+   "no": "剑指 Offer 04",
+   "title": "二维数组中的查找",
+   "level": "Easy",
+   "category": "其他",
+   "method": "solve"
+  },
+  {
+   "no": "剑指 Offer 10- II",
+   "title": "青蛙跳台阶问题",
+   "level": "Easy",
+   "category": "其他",
+   "method": "solve"
+  },
+  {
+   "no": "剑指 Offer 29",
+   "title": "顺时针打印矩阵",
+   "level": "Easy",
+   "category": "其他",
+   "method": "solve"
+  },
+  {
+   "no": "剑指 Offer 51",
+   "title": "数组中的逆序对",
+   "level": "Hard",
+   "category": "其他",
+   "method": "solve"
+  },
+  {
+   "no": "剑指 Offer 61",
+   "title": "扑克牌中的顺子",
+   "level": "Easy",
+   "category": "其他",
+   "method": "solve"
+  },
+  {
+   "no": "面试题 01.05",
+   "title": "一次编辑",
+   "level": "Medium",
+   "category": "双指针",
+   "method": "solve"
+  },
+  {
+   "no": "面试题 01.07",
+   "title": "旋转矩阵",
+   "level": "Medium",
+   "category": "数组/矩阵",
+   "method": "solve"
+  },
+  {
+   "no": "面试题 08.06",
+   "title": "汉诺塔问题",
+   "level": "Easy",
+   "category": "数组/矩阵",
+   "method": "solve"
+  },
+  {
+   "no": "面试题 16.02",
+   "title": "单词频率",
+   "level": "Medium",
+   "category": "哈希表",
+   "method": "solve"
+  },
+  {
+   "no": "面试题 16.18",
+   "title": "模式匹配",
+   "level": "Medium",
+   "category": "回溯",
+   "method": "solve"
+  },
+  {
+   "no": "面试题 17.24",
+   "title": "最大子矩阵",
+   "level": "Hard",
+   "category": "动态规划",
+   "method": "solve"
+  }
+ ],
+ "paid": [
+  {
+   "no": "186",
+   "title": "反转字符串中的单词 II",
+   "level": "Medium",
+   "category": "双指针"
+  },
+  {
+   "no": "280",
+   "title": "摆动排序",
+   "level": "Medium",
+   "category": "数组/矩阵"
+  },
+  {
+   "no": "305",
+   "title": "岛屿数量 II",
+   "level": "Hard",
+   "category": "图/DFS/BFS"
+  },
+  {
+   "no": "340",
+   "title": "至多包含 K 个不同字符的最长子串",
+   "level": "Medium",
+   "category": "滑动窗口"
+  },
+  {
+   "no": "361",
+   "title": "轰炸敌人",
+   "level": "Medium",
+   "category": "动态规划"
+  },
+  {
+   "no": "531",
+   "title": "孤独像素 I",
+   "level": "Medium",
+   "category": "哈希表"
+  },
+  {
+   "no": "533",
+   "title": "孤独像素 II",
+   "level": "Medium",
+   "category": "哈希表"
+  },
+  {
+   "no": "663",
+   "title": "均匀树划分",
+   "level": "Medium",
+   "category": "二叉树/树"
+  },
+  {
+   "no": "694",
+   "title": "不同岛屿的数量",
+   "level": "Medium",
+   "category": "图/DFS/BFS"
+  },
+  {
+   "no": "1100",
+   "title": "长度为 K 的无重复字符子串",
+   "level": "Medium",
+   "category": "滑动窗口"
+  },
+  {
+   "no": "1102",
+   "title": "得分最高的路径",
+   "level": "Medium",
+   "category": "图/DFS/BFS"
+  },
+  {
+   "no": "1151",
+   "title": "最少交换次数来组合所有的 1",
+   "level": "Medium",
+   "category": "滑动窗口"
+  },
+  {
+   "no": "1230",
+   "title": "抛掷硬币",
+   "level": "Medium",
+   "category": "动态规划"
+  },
+  {
+   "no": "补充题21",
+   "title": "字符串相减",
+   "level": "Medium",
+   "category": "其他"
+  }
+ ]
+}

@@ -1,0 +1,838 @@
+/* ==========================================================================
+   解析 Tab（.an__*）· 阅读材质
+   --------------------------------------------------------------------------
+   速览区是「抬头 + 事实行 + 标签」，不套卡片（靠分割线收口）；
+   下面每块内容（考点 / 误区 / 参考 / 推演 / 追问 / AI）是同一规格的 content 卡片：
+   同一套内边距、同一套标题层级、同一套间距。
+   规则来源：docs/设计规范.md §6（卡片配方）、§8（阅读材质）。
+   只放 .an__* 前缀的类，避免和 pages.css / lab.css 抢规则。
+   ========================================================================== */
+
+.an {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  /* 卡片不拉成一行：72ch 按 13.5px 算约 648px，和左栏宽度对齐，宽屏才收口 */
+  max-width: 72ch;
+}
+
+/* ---------------------------------------------------------------- ① 速览
+   不是卡片：抬头 + 事实行 + 标签，用一条分割线收口。 */
+
+.an__brief {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.an__brief-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+/* 中文小标签：不加字距、不做 uppercase（规范 §2.4） */
+.an__eyebrow {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-normal);
+  color: var(--text-3);
+}
+
+.an__level {
+  padding: 1px var(--sp-2);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-snug);
+  color: var(--text-2);
+  background: var(--bg-surface-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xs);
+}
+
+/* 抬头：一句话概括，用衬线体，比正文大一档 */
+.an__oneliner {
+  margin: var(--sp-2) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-normal);
+  color: var(--text-1);
+}
+
+/* 事实行：标签在上、等宽数值在下，像仪表读数 */
+.an__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+  gap: var(--sp-2) var(--sp-4);
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.an__fact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.an__fact-label {
+  font-size: var(--fs-xs);
+  line-height: var(--lh-snug);
+  color: var(--text-3);
+}
+
+.an__fact-value {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.an__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  margin-top: var(--sp-3);
+}
+
+.an__loops {
+  margin: var(--sp-3) 0 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-cjk);
+  color: var(--text-3);
+}
+
+/* ---------------------------------------------------------------- ② 卡片
+   考点 / 误区 / 参考 / 推演 / 追问 共用一套：content 材质 + --r-lg + 统一内边距。 */
+
+.an__pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: var(--sp-3);
+}
+
+.an__card {
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--mat-content-bg);
+  border: 1px solid var(--mat-content-border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--mat-content-shadow);
+}
+
+/* 误区：只把「易错」这行字和一条左边线转成危险色，卡片本体保持同一材质 */
+.an__card--warn {
+  border-left: 2px solid var(--danger-line);
+}
+
+.an__card--warn .an__eyebrow {
+  color: var(--danger-text);
+}
+
+/* AI 解析：info 语义色，只落在描边和标签上 */
+.an__card--ai {
+  border-color: var(--info-line);
+}
+
+.an__card--ai .an__eyebrow {
+  color: var(--info-text);
+}
+
+/* 卡片抬头：统一高度、统一分割线 */
+.an__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.an__head > div {
+  min-width: 0;
+}
+
+.an__title {
+  margin: var(--sp-1) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-normal);
+  color: var(--text-1);
+}
+
+.an__head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+}
+
+/* ---------------------------------------------------------------- 卡片按钮 */
+
+.an__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: var(--h-sm);
+  padding: 0 var(--sp-2);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-2);
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-md);
+  transition:
+    background 0.16s var(--ease),
+    border-color 0.16s var(--ease),
+    color 0.16s var(--ease);
+}
+
+/* 图标跟字号对齐（12px），不另立一档尺寸 */
+.an__btn svg {
+  width: var(--fs-sm);
+  height: var(--fs-sm);
+}
+
+.an__btn:hover {
+  color: var(--text-1);
+  background: var(--bg-surface-2);
+  border-color: var(--border-strong);
+}
+
+.an__btn--accent {
+  color: var(--accent-text);
+  background: var(--accent-wash);
+  border-color: var(--accent-line);
+}
+
+.an__btn--accent:hover {
+  color: var(--accent-text-soft);
+  background: var(--accent-wash-strong);
+  border-color: var(--accent);
+}
+
+/* 折叠按钮的基础形态在 motion.css，这里只把圆角收敛到令牌 */
+.an__fold {
+  border-radius: var(--r-md);
+  color: var(--text-3);
+}
+
+.an__fold:hover {
+  color: var(--text-1);
+  background: var(--bg-surface-2);
+}
+
+/* ---------------------------------------------------------------- 参考答案代码块
+   嵌在 content 卡片里的代码：--r-sm、不加内阴影（规范 §7.7）。 */
+
+.an__code-scroll {
+  margin-top: var(--sp-1);
+  max-height: 440px;
+  overflow: auto;
+  background: var(--mat-code-bg);
+  border: 1px solid var(--mat-code-border);
+  border-radius: var(--r-sm);
+}
+
+.an__code-grid {
+  display: inline-block;
+  min-width: 100%;
+  padding: var(--sp-2) 0;
+}
+
+.an__code-line {
+  display: flex;
+  align-items: flex-start;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+}
+
+.an__code-no {
+  position: sticky;
+  left: 0;
+  flex: none;
+  width: 36px;
+  padding-right: var(--sp-2);
+  font-family: var(--font-data);
+  font-size: var(--fs-2xs);
+  text-align: right;
+  color: var(--syn-gutter);
+  background: var(--bg-code);
+  user-select: none;
+}
+
+.an__code-txt {
+  padding-right: var(--sp-4);
+  color: var(--syn-variable);
+  white-space: pre;
+}
+
+/* ---------------------------------------------------------------- 卡片里的正文
+   用 .prose.an__prose 提高优先级，不依赖文件加载顺序。 */
+
+.prose.an__prose {
+  max-width: none;
+  font-size: var(--fs-md);
+  line-height: var(--lh-cjk);
+  color: var(--text-2);
+}
+
+/* 卡片内的小标题不重复卡片标题的竖线，层级靠字号 */
+.prose.an__prose h1,
+.prose.an__prose h2,
+.prose.an__prose h3 {
+  margin: var(--sp-4) 0 var(--sp-2);
+  padding-left: 0;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
+  border-left: none;
+}
+
+.prose.an__prose h3 {
+  font-size: var(--fs-md);
+}
+
+.prose.an__prose h4 {
+  margin: var(--sp-3) 0 var(--sp-1);
+  font-size: var(--fs-sm);
+}
+
+.prose.an__prose > *:first-child {
+  margin-top: 0;
+}
+
+.prose.an__prose p {
+  margin: var(--sp-3) 0;
+}
+
+.prose.an__prose ul,
+.prose.an__prose ol {
+  margin: var(--sp-3) 0;
+  padding-left: 1.4em;
+}
+
+.prose.an__prose li {
+  margin: var(--sp-2) 0;
+}
+
+.prose.an__prose li::marker {
+  color: var(--text-3);
+}
+
+.prose.an__prose ol > li::marker {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+
+.prose.an__prose code {
+  padding: 0.1em 0.36em;
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  color: var(--accent-text-soft);
+  background: var(--bg-surface-3);
+  border: none;
+  border-radius: var(--r-xs);
+}
+
+.prose.an__prose pre {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-3);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  background: var(--mat-code-bg);
+  border: 1px solid var(--mat-code-border);
+  border-radius: var(--r-sm);
+  box-shadow: none;
+  overflow-x: auto;
+}
+
+.prose.an__prose pre code {
+  padding: 0;
+  font-size: inherit;
+  color: var(--syn-variable);
+  background: none;
+  border: none;
+}
+
+.prose.an__prose blockquote {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--bg-surface-2);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--r-sm);
+  color: var(--text-2);
+}
+
+.prose.an__prose blockquote > *:first-child {
+  margin-top: 0;
+}
+
+.prose.an__prose blockquote > *:last-child {
+  margin-bottom: 0;
+}
+
+.prose.an__prose table {
+  width: 100%;
+  margin: var(--sp-3) 0;
+  font-size: var(--fs-sm);
+  border-collapse: collapse;
+}
+
+.prose.an__prose th {
+  padding: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-2);
+  text-align: left;
+  background: var(--bg-surface-2);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.prose.an__prose td {
+  padding: var(--sp-2);
+  font-size: var(--fs-sm);
+  vertical-align: top;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.prose.an__prose strong {
+  color: var(--text-1);
+}
+
+.prose.an__prose a {
+  color: var(--text-1);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 0.2em;
+}
+
+.prose.an__prose a:hover {
+  text-decoration-color: var(--accent-text);
+}
+
+.prose.an__prose hr {
+  height: 1px;
+  margin: var(--sp-4) 0;
+  border: none;
+  background: var(--border-subtle);
+}
+
+/* ---------------------------------------------------------------- 空状态 / 提示 */
+
+.an__empty {
+  margin: var(--sp-2) 0 0;
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-cjk);
+  color: var(--text-3);
+  background: transparent;
+  border: 1px dashed var(--border-default);
+  border-radius: var(--r-sm);
+}
+
+.an__note {
+  font-size: var(--fs-xs);
+  line-height: var(--lh-cjk);
+  color: var(--text-3);
+}
+
+/* ---------------------------------------------------------------- ⑤ AI 解析 */
+
+.an__ai-empty p {
+  margin: var(--sp-2) 0;
+  font-size: var(--fs-md);
+  line-height: var(--lh-cjk);
+  color: var(--text-2);
+}
+
+.an__ai-empty .an__note {
+  margin-top: var(--sp-3);
+}
+
+.an__thinking {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) 0;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.an__thinking .spin {
+  width: var(--fs-md);
+  height: var(--fs-md);
+  color: var(--accent-text);
+  animation: spin 0.9s linear infinite;
+}
+
+.an__ai-body {
+  margin-top: var(--sp-2);
+}
+
+.an__error {
+  margin-top: var(--sp-2);
+  padding: var(--sp-3);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-cjk);
+  color: var(--danger-text);
+  background: var(--danger-wash);
+  border: 1px solid var(--danger-line);
+  border-radius: var(--r-sm);
+}
+
+.an__error-hint {
+  display: block;
+  margin-top: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+/* ---------------------------------------------------------------- ⑥ 目录
+   目录是导航，不是卡片：只留一条上分割线。 */
+
+.an__toc {
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.an__toc .an__head {
+  align-items: center;
+  margin-bottom: var(--sp-2);
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.an__toc-list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.an__toc-item[data-level='4'] {
+  padding-left: var(--sp-4);
+}
+
+.an__toc-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--font-ui);
+  font-size: var(--fs-md);
+  color: var(--text-2);
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  transition:
+    background 0.16s var(--ease),
+    border-color 0.16s var(--ease),
+    color 0.16s var(--ease);
+}
+
+.an__toc-link:hover {
+  color: var(--text-1);
+  background: var(--bg-surface-2);
+  border-color: var(--border-subtle);
+}
+
+.an__toc-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.an__toc-arrow {
+  flex: none;
+  width: var(--fs-sm);
+  height: var(--fs-sm);
+  color: var(--text-3);
+  transition:
+    transform 0.16s var(--ease),
+    color 0.16s var(--ease);
+}
+
+.an__toc-link:hover .an__toc-arrow {
+  transform: translateX(2px);
+  color: var(--accent-text);
+}
+
+/* ---------------------------------------------------------------- 题面示例区
+   ProblemDetail 的「题面」Tab 复用这几个类，所以放在本文件里统一维护。 */
+
+.an__examples {
+  margin-top: var(--sp-5);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.an__ex-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+}
+
+.an__ex-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: var(--h-sm);
+  padding: 0 var(--sp-2);
+  font-family: var(--font-ui);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-2);
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-md);
+  transition:
+    background 0.16s var(--ease),
+    border-color 0.16s var(--ease),
+    color 0.16s var(--ease);
+}
+
+.an__ex-btn svg {
+  width: var(--fs-sm);
+  height: var(--fs-sm);
+}
+
+.an__ex-btn:hover:not(:disabled) {
+  color: var(--text-1);
+  background: var(--bg-surface-3);
+  border-color: var(--border-strong);
+}
+
+.an__ex-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------------- 响应式 */
+
+@media (max-width: 900px) {
+  .an__pair {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .an__thinking .spin {
+    animation: none;
+  }
+
+  .an__toc-link:hover .an__toc-arrow {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   自动解析（全量题库）：自动解析标记 / 官方提示 / 相关题
+   ========================================================================== */
+
+.an__brief-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.an__auto {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 7px;
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-wide);
+  color: var(--info-text);
+  background: var(--info-wash);
+  border: 1px solid var(--info-line);
+  border-radius: var(--r-pill);
+  cursor: help;
+}
+
+.an__card--hints {
+  border-left: 2px solid var(--info);
+}
+
+.an__hints {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: hint;
+}
+
+.an__hints li {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: var(--sp-2);
+  align-items: start;
+}
+
+.an__hints-no {
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  color: var(--info-text);
+  padding-top: 2px;
+}
+
+.an__hints .an__prose {
+  font-size: var(--fs-md);
+  line-height: var(--lh-cjk);
+}
+
+.an__related {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--sp-2);
+}
+
+.an__related-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  transition:
+    background var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease),
+    color var(--t-fast) var(--ease);
+}
+
+.an__related-item:hover {
+  background: var(--bg-surface-3);
+  border-color: var(--accent-line);
+  color: var(--text-1);
+}
+
+.an__related-no {
+  flex: none;
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+.an__related-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.an__related-arrow {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  opacity: 0.5;
+}
+
+/* ==========================================================================
+   AI 精讲（Hot 100 预生成）：按「阅读材质」排，不套卡片
+   ========================================================================== */
+
+.an__teach {
+  margin-top: var(--sp-2);
+  padding-top: var(--sp-4);
+  border-top: 2px solid var(--accent);
+}
+
+.an__teach-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+}
+
+.an__teach-title {
+  margin-top: var(--sp-1);
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.an__teach-meta {
+  flex: none;
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+/* 正文按阅读区标准：15px / 1.85 / 68ch */
+.an__teach-body {
+  max-width: 68ch;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-loose);
+  color: var(--text-2);
+}
+
+.an__teach-body h2 {
+  margin: var(--sp-7) 0 var(--sp-3);
+  padding: 0 0 var(--sp-2);
+  border-left: none;
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: var(--text-1);
+}
+
+.an__teach-body h2:first-child {
+  margin-top: 0;
+}
+
+.an__teach-body h3 {
+  margin: var(--sp-5) 0 var(--sp-2);
+  font-size: var(--fs-lg);
+  color: var(--text-1);
+}
+
+.an__teach-body p {
+  margin: 0 0 1em;
+}
+
+.an__teach-body ul,
+.an__teach-body ol {
+  margin: 0 0 1em;
+  padding-left: 1.4em;
+  list-style: revert;
+}
+
+.an__teach-body li {
+  margin-bottom: 0.35em;
+}
+
+.an__teach-body table {
+  width: 100%;
+  margin: 0 0 1.2em;
+}
+
+.an__teach-body pre,
+.an__teach-body blockquote {
+  margin: 0 0 1.2em;
+}

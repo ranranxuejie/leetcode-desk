@@ -1,0 +1,708 @@
+/* ==========================================================================
+   终端 / 单步追踪 · code 材质
+   --------------------------------------------------------------------------
+   终端是 code 材质的极端形态：底色 --bg-code、字体一律 --font-mono、
+   圆角只到 --r-xs/--r-sm、不出现比例字体（规范 §1 / §7）。
+   提示符 --accent、普通输出 --text-2、错误 --danger-text、横幅 --bg-code-2。
+   ========================================================================== */
+
+.term {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-code);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  /* 终端里没有「比例字体」这一档：整块默认就是 code 字号，子元素只按需改档 */
+  font-size: var(--fs-code);
+  /* 外层 .lab__console 是 pre-wrap，这里复位，免得 JSX 的缩进被当换行渲染 */
+  white-space: normal;
+  overflow: hidden;
+}
+
+/* 工具条：--bg-code-2 + 1px --border-code，按钮尺寸沿用 code 材质的克制规格 */
+.term__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: var(--sp-1) var(--sp-2);
+  border-bottom: 1px solid var(--border-code);
+  background: var(--bg-code-2);
+}
+
+.term__bar .btn {
+  height: var(--h-sm);
+  padding: 0 var(--sp-2);
+  gap: var(--sp-1);
+  font-size: var(--fs-xs);
+  background: transparent;
+  border-color: var(--border-code);
+  border-radius: var(--r-xs);
+  color: var(--text-3);
+}
+
+.term__bar .btn:hover:not(:disabled) {
+  color: var(--text-1);
+  border-color: var(--border-default);
+  background: var(--bg-code-3);
+}
+
+.term__bar .btn:disabled {
+  opacity: 0.45;
+}
+
+.term__bar .btn svg {
+  width: var(--sp-3);
+  height: var(--sp-3);
+}
+
+.term__bar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.term__running {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--fs-2xs);
+  color: var(--danger-text);
+}
+
+.term__varcount {
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-wide);
+  color: var(--text-3);
+}
+
+.term__spin {
+  width: var(--sp-3);
+  height: var(--sp-3);
+  color: var(--accent-text);
+  animation: spin 1s linear infinite;
+}
+
+/* 横幅：--bg-code-2 底 + 左侧琥珀竖线表示「提醒，不是错误」 */
+.term__banner {
+  flex: none;
+  padding: var(--sp-1) var(--sp-3);
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-cjk);
+  color: var(--text-2);
+  background: var(--bg-code-2);
+  border-bottom: 1px solid var(--border-code);
+  border-left: 2px solid var(--accent-line);
+}
+
+.term__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+/* 输出流 + 内联输入行，滚动只发生在这里 */
+.term__stream {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: var(--sp-2) var(--sp-3) var(--sp-3);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  cursor: text;
+  scrollbar-color: var(--text-4) transparent;
+}
+
+.term__line {
+  display: flex;
+  align-items: flex-start;
+}
+
+.term__pfx {
+  flex: none;
+  white-space: pre;
+  user-select: none;
+}
+
+.term__text {
+  flex: 1;
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.term__ms {
+  flex: none;
+  margin-left: var(--sp-2);
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+  opacity: 0.85;
+  user-select: none;
+}
+
+/* 输入行：提示符 --accent，用户敲的命令是最亮的一行 */
+.term__line--input .term__pfx {
+  color: var(--accent-text);
+}
+
+.term__line--input .term__text {
+  color: var(--text-1);
+}
+
+.term__line--stdout .term__text {
+  color: var(--text-2);
+}
+
+.term__line--stderr .term__text,
+.term__line--error .term__text {
+  color: var(--danger-text);
+}
+
+.term__line--result .term__pfx {
+  color: var(--accent-text);
+}
+
+.term__line--result .term__text {
+  color: var(--text-1);
+}
+
+.term__line--info .term__text,
+.term__line--meta .term__text {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+.term__busy {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 2px 0;
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+/* 中断回执（P2-9）：只在请求中断后短暂出现，用语义色标出，不抢正文视线 */
+.term__notice {
+  padding: 2px 0;
+  font-size: var(--fs-xs);
+  line-height: 1.65;
+  color: var(--danger-text);
+}
+
+/* 空状态 */
+.term__empty {
+  padding: var(--sp-1) 0 var(--sp-3);
+  font-family: var(--font-ui);
+}
+
+.term__empty-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  color: var(--text-1);
+}
+
+.term__empty-note {
+  margin: var(--sp-1) 0 var(--sp-2);
+  max-width: 46ch;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-cjk);
+  color: var(--text-2);
+}
+
+.term__examples {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  max-width: 520px;
+}
+
+.term__example {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-2);
+  text-align: left;
+  background: var(--bg-code-2);
+  border: 1px solid var(--border-code);
+  border-left: 2px solid var(--accent-line);
+  border-radius: var(--r-xs);
+  color: var(--text-2);
+  transition:
+    background 0.16s var(--ease),
+    border-color 0.16s var(--ease);
+}
+
+.term__example:hover {
+  background: var(--bg-code-3);
+  border-color: var(--border-default);
+  /* 悬停时保留左侧琥珀竖线，只把描边提亮 */
+  border-left-color: var(--accent);
+}
+
+.term__example code {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-1);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.term__example span {
+  flex: none;
+  font-size: var(--fs-2xs);
+  color: var(--text-3);
+}
+
+/* 输入行：贴着输出流末尾，没有独立边框；等宽字体，绝不用比例字体 */
+.term__inputrow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-1);
+  margin-top: 2px;
+}
+
+.term__prompt {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  color: var(--accent-text);
+  user-select: none;
+}
+
+.term__input {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  resize: none;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  color: var(--text-1);
+  caret-color: var(--accent-text);
+  scrollbar-color: var(--text-4) transparent;
+}
+
+.term__input:focus-visible {
+  outline: none;
+}
+
+.term__input::placeholder {
+  color: var(--text-3);
+}
+
+.term__inputrow:focus-within .term__prompt {
+  color: var(--accent-text);
+}
+
+/* 变量表：右侧固定宽度（--sp-9 × 4 = 224），窄屏折叠到下方横向滚动 */
+.term__vars {
+  flex: none;
+  width: calc(var(--sp-9) * 4);
+  min-height: 0;
+  overflow: auto;
+  border-left: 1px solid var(--border-code);
+  background: var(--bg-code-2);
+}
+
+.term__vars-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-1) var(--sp-2);
+  font-family: var(--font-ui);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--ls-normal);
+  color: var(--text-3);
+  background: var(--bg-code-2);
+  border-bottom: 1px solid var(--border-code);
+}
+
+.term__vars-count {
+  font-family: var(--font-mono);
+  letter-spacing: var(--ls-normal);
+  color: var(--text-2);
+}
+
+.term__vars-empty {
+  margin: 0;
+  padding: var(--sp-2);
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-cjk);
+  color: var(--text-3);
+}
+
+.term__vartable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: var(--fs-xs);
+}
+
+.term__vartable th {
+  padding: var(--sp-1) var(--sp-2);
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
+  color: var(--text-3);
+  border-bottom: 1px solid var(--border-code);
+}
+
+.term__vartable th:nth-child(1) {
+  width: 34%;
+}
+
+.term__vartable th:nth-child(2) {
+  width: 22%;
+}
+
+.term__vartable th:nth-child(3) {
+  width: 44%;
+}
+
+.term__varrow {
+  cursor: pointer;
+}
+
+.term__varrow:hover {
+  background: var(--accent-wash);
+}
+
+.term__varrow td {
+  max-width: 0;
+  padding: var(--sp-1) var(--sp-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-code);
+}
+
+.term__varname {
+  color: var(--text-1);
+}
+
+.term__varbtn {
+  display: block;
+  max-width: 100%;
+  padding: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.term__varbtn:focus-visible {
+  outline: 1px solid var(--accent-line);
+  outline-offset: 1px;
+}
+
+.term__vartype {
+  color: var(--text-3);
+}
+
+.term__varrepr {
+  color: var(--text-2);
+}
+
+/* 深色区里把滚动条压暗，否则沿用全局的亮色滑块太扎眼 */
+.term__stream::-webkit-scrollbar-thumb,
+.term__vars::-webkit-scrollbar-thumb,
+.trace__body::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: var(--r-pill);
+  background: var(--text-4);
+  background-clip: padding-box;
+}
+
+.term__stream::-webkit-scrollbar-thumb:hover,
+.term__vars::-webkit-scrollbar-thumb:hover,
+.trace__body::-webkit-scrollbar-thumb:hover {
+  background: var(--text-3);
+  background-clip: padding-box;
+}
+
+@media (max-width: 900px) {
+  .term__body {
+    flex-direction: column;
+  }
+
+  .term__vars {
+    width: auto;
+    max-height: calc(var(--sp-9) * 2 + var(--sp-5));
+    border-left: 0;
+    border-top: 1px solid var(--border-code);
+  }
+
+  .term__vartable {
+    min-width: 320px;
+  }
+}
+
+/* ---------------------------------------------------------------- 单步追踪 */
+
+.trace {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-code);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  /* TracePanel 嵌在 .lab__console（pre-wrap）里，必须复位 */
+  white-space: normal;
+}
+
+.trace__head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  background: var(--bg-code-2);
+  border-bottom: 1px solid var(--border-code);
+}
+
+.trace__title {
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-normal);
+  color: var(--text-2);
+}
+
+.trace__flag {
+  padding: 0 var(--sp-2);
+  font-family: var(--font-ui);
+  font-size: var(--fs-2xs);
+  color: var(--danger-text);
+  border: 1px dashed var(--danger-line);
+  border-radius: var(--r-pill);
+}
+
+.trace__close {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: var(--sp-5);
+  height: var(--sp-5);
+  padding: 0;
+  color: var(--text-3);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--r-xs);
+  transition:
+    color 0.16s var(--ease),
+    border-color 0.16s var(--ease);
+}
+
+.trace__close:hover {
+  color: var(--text-1);
+  border-color: var(--border-code);
+}
+
+.trace__close svg {
+  width: var(--sp-3);
+  height: var(--sp-3);
+}
+
+.trace__error {
+  flex: none;
+  margin: var(--sp-2) var(--sp-3) 0;
+  padding: var(--sp-1) var(--sp-2);
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-cjk);
+  color: var(--danger-text);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  background: var(--danger-wash);
+  border: 1px solid var(--danger-line);
+  border-radius: var(--r-sm);
+}
+
+.trace__repr {
+  flex: none;
+  margin: var(--sp-2) var(--sp-3) 0;
+  padding: var(--sp-1) var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--success-text);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  background: var(--success-wash);
+  border-left: 2px solid var(--success-line);
+}
+
+.trace__repr-arrow {
+  margin-right: var(--sp-1);
+  user-select: none;
+}
+
+.trace__io {
+  flex: none;
+  margin: var(--sp-1) var(--sp-3) 0;
+  padding: var(--sp-1) var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  color: var(--text-2);
+  background: var(--bg-code-2);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-xs);
+}
+
+.trace__io--stderr {
+  color: var(--danger-text);
+}
+
+.trace__body {
+  flex: 1;
+  min-height: 0;
+  max-height: 60vh;
+  overflow: auto;
+  margin-top: var(--sp-1);
+  scrollbar-color: var(--text-4) transparent;
+}
+
+.trace__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-xs);
+}
+
+.trace__table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--sp-1) var(--sp-2);
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-normal);
+  color: var(--text-3);
+  background: var(--bg-code-2);
+  border-bottom: 1px solid var(--border-code);
+}
+
+.trace__table thead th:nth-child(1) {
+  width: var(--sp-7);
+}
+
+.trace__table thead th:nth-child(2) {
+  width: var(--sp-9);
+}
+
+.trace__table thead th:nth-child(4) {
+  width: var(--sp-9);
+}
+
+.trace__row td {
+  padding: var(--sp-1) var(--sp-2);
+  vertical-align: top;
+  border-bottom: 1px solid var(--border-code);
+}
+
+/* 斑马纹直接用 --syn-active-line（编辑器当前行的同一种「极淡抬升」） */
+.trace__row:nth-child(even) td {
+  background: var(--syn-active-line);
+}
+
+.trace__idx {
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.trace__line {
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.trace__code code {
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.trace__depth {
+  color: var(--text-3);
+}
+
+.trace__locals {
+  min-width: calc(var(--sp-9) * 2 + var(--sp-2));
+}
+
+.trace__chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-1);
+  max-width: 100%;
+  margin: 1px var(--sp-1) 1px 0;
+  padding: 0 var(--sp-1);
+  font-size: var(--fs-2xs);
+  background: var(--bg-code-3);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-xs);
+}
+
+.trace__chip-name {
+  color: var(--syn-variable);
+}
+
+.trace__chip-eq {
+  color: var(--text-3);
+}
+
+.trace__chip-repr {
+  display: inline-block;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+  color: var(--text-2);
+}
+
+.trace__none {
+  color: var(--text-3);
+}
+
+.trace__empty {
+  padding: var(--sp-4) var(--sp-3);
+  font-family: var(--font-ui);
+  font-size: var(--fs-xs);
+  line-height: var(--lh-cjk);
+  color: var(--text-3);
+}
+
+@media (max-width: 900px) {
+  .trace__body {
+    max-height: 300px;
+  }
+
+  .trace__table {
+    min-width: 460px;
+  }
+}

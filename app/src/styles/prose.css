@@ -1,0 +1,410 @@
+/* ==========================================================================
+   阅读材质：题面 / 精讲 / 解析 / 教程正文
+   --------------------------------------------------------------------------
+   四种材质里唯一「没有盒子」的一种：直接落在 canvas 上，靠行高、段间距、
+   标题上间距和分割线建立节奏，和周围的 content 卡片形成对比。
+   规则来源：docs/设计规范.md §8（阅读材质）、§7（代码块）。
+   所有颜色 / 字号 / 圆角 / 阴影只取 tokens.css 的令牌。
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- 正文 */
+
+.prose {
+  /* 阅读区比界面正文大一档：15px / 1.85（中文一行约 38–42 字）。
+     68ch 按 15px 的 ch 宽算约 680px，宽屏下也不会一行铺满。 */
+  max-width: 68ch;
+  font-size: var(--fs-lg);
+  line-height: var(--lh-loose);
+  /* 中文不加字距：这里显式归零，避免继承到任何加宽的标签样式 */
+  letter-spacing: var(--ls-normal);
+  color: var(--text-2);
+}
+
+/* 首个子元素不要顶出额外的上间距。
+   放在段落规则之后，靠源码顺序赢过 .prose p 的 1em，不用 !important。 */
+.prose > *:first-child {
+  margin-top: 0;
+}
+
+.prose p {
+  margin: 1em 0;
+}
+
+/* 加粗 / 强调比正文亮一档：层级靠亮度，不靠换色 */
+.prose strong,
+.prose b {
+  color: var(--text-1);
+  font-weight: var(--fw-semibold);
+}
+
+.prose em {
+  color: var(--text-1);
+}
+
+.prose a {
+  color: var(--text-1);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 0.2em;
+}
+
+.prose a:hover {
+  text-decoration-color: var(--accent-text);
+}
+
+/* ---------------------------------------------------------------- 标题
+   层级靠「字号 + 上间距」，颜色一律 --text-1；
+   h2 保留左侧 3px 琥珀竖线，作为章节的「书脊」。 */
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-display);
+  color: var(--text-1);
+  /* 中文标题不加字距（base.css 给标题的 -0.02em 在这里归零） */
+  letter-spacing: var(--ls-normal);
+  text-wrap: balance;
+  /* 锚点跳转时避开吸顶条 */
+  scroll-margin-top: 90px;
+}
+
+.prose h1 {
+  margin: var(--sp-8) 0 var(--sp-3);
+  font-size: var(--fs-3xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+}
+
+.prose h2 {
+  margin: var(--sp-8) 0 var(--sp-3);
+  padding-left: var(--sp-3);
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+  border-left: 3px solid var(--accent);
+}
+
+.prose h3 {
+  margin: var(--sp-7) 0 var(--sp-2);
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-snug);
+}
+
+.prose h4 {
+  margin: var(--sp-6) 0 var(--sp-2);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-snug);
+}
+
+/* ---------------------------------------------------------------- 列表 */
+
+.prose ul,
+.prose ol {
+  margin: 1em 0;
+  padding-left: 1.5em;
+}
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li {
+  margin: var(--sp-2) 0;
+}
+
+.prose li > ul,
+.prose li > ol {
+  margin: var(--sp-1) 0;
+}
+
+/* 项目符号压到辅助色，不跟正文抢；有序序号用等宽数字，位数对齐才扫得动 */
+.prose li::marker {
+  color: var(--text-3);
+}
+
+.prose ol > li::marker {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------- 引用 */
+
+.prose blockquote {
+  margin: var(--sp-5) 0;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--bg-surface);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--r-sm);
+  color: var(--text-2);
+}
+
+.prose blockquote > *:first-child {
+  margin-top: 0;
+}
+
+.prose blockquote > *:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------------------------------------------------------------- 分割线 */
+
+.prose hr {
+  height: 1px;
+  margin: var(--sp-7) 0;
+  border: none;
+  background: var(--border-subtle);
+}
+
+/* ---------------------------------------------------------------- 行内代码 */
+
+.prose code {
+  padding: 0.1em 0.36em;
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  color: var(--accent-text-soft);
+  background: var(--bg-surface-3);
+  border-radius: var(--r-xs);
+  white-space: break-spaces;
+}
+
+/* ---------------------------------------------------------------- 代码块
+   这是「阅读区里嵌的代码」：同代码材质，但圆角 --r-sm，
+   且不加内阴影 —— 外层已经是 canvas，再加就成了双层凹陷（规范 §7.7）。 */
+
+.prose pre {
+  position: relative;
+  margin: var(--sp-5) 0;
+  padding: var(--sp-3) var(--sp-4);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  /* 规范 §7.2 指定的代码行高（令牌里没有这一档） */
+  line-height: 1.65;
+  color: var(--syn-variable);
+  background: var(--bg-code);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-sm);
+  box-shadow: none;
+  overflow-x: auto;
+}
+
+.prose pre code {
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: 0;
+  white-space: pre;
+}
+
+/* 题面示例里的「输入：/ 输出：」标签：在代码块里用琥珀小标签，扫读时先看到字段 */
+.prose pre strong {
+  color: var(--accent-text-soft);
+  font-weight: var(--fw-semibold);
+}
+
+/* markdown.tsx 注入的复制按钮：右上角、默认半透明，指到代码块才明显 */
+.prose .copy-code {
+  position: absolute;
+  top: var(--sp-1);
+  right: var(--sp-1);
+  padding: var(--sp-1) var(--sp-2);
+  font-family: var(--font-ui);
+  font-size: var(--fs-2xs);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--ls-normal);
+  color: var(--text-3);
+  background: var(--bg-surface-3);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-xs);
+  opacity: 0.5;
+  /* 选中代码复制时不要把按钮文字带进剪贴板 */
+  user-select: none;
+  transition:
+    opacity 0.16s var(--ease),
+    color 0.16s var(--ease),
+    background 0.16s var(--ease),
+    border-color 0.16s var(--ease);
+}
+
+.prose pre:hover .copy-code,
+.prose .copy-code:focus-visible {
+  opacity: 1;
+}
+
+.prose .copy-code:hover {
+  color: var(--text-1);
+  background: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+}
+
+/* 复制成功：短暂转成成功色（状态由 markdown.tsx 打上 data-state） */
+.prose .copy-code[data-state='copied'] {
+  opacity: 1;
+  color: var(--success-text);
+  border-color: var(--success-line);
+}
+
+/* ---------------------------------------------------------------- 表格
+   阅读区的表格只用横线分隔，不套外框 —— 外框一加就成了 content 卡片。 */
+
+.prose table {
+  width: 100%;
+  margin: var(--sp-5) 0;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  border-collapse: collapse;
+}
+
+.prose th {
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-2);
+  text-align: left;
+  background: var(--bg-surface-2);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.prose td {
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-sm);
+  vertical-align: top;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* ---------------------------------------------------------------- 图片 */
+
+.prose img {
+  max-width: 100%;
+  margin: var(--sp-4) 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xs);
+}
+
+/* ---------------------------------------------------------------- 题面（StatementHtml）
+   力扣题面是外部 HTML，结构与精讲不同，这里只做必要的归一化。 */
+
+.prose--statement {
+  font-size: var(--fs-lg);
+  line-height: var(--lh-loose);
+}
+
+.prose--statement ul {
+  padding-left: 1.5em;
+}
+
+/* 力扣题面里的「示例 1：」标签（<strong class="example">）：压成小标题，不套卡片 */
+.prose .example {
+  color: var(--text-1);
+  font-weight: var(--fw-semibold);
+}
+
+/* 新版题面的示例块（<div class="example-block">）：和 <pre> 版示例保持同一种材质，
+   否则同一套教材里「示例」会长成两种样子。 */
+.prose .example-block {
+  margin: var(--sp-2) 0 var(--sp-5);
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+  color: var(--syn-variable);
+  background: var(--bg-code);
+  border: 1px solid var(--border-code);
+  border-radius: var(--r-sm);
+}
+
+.prose .example-block p {
+  margin: 0;
+}
+
+.prose .example-block strong {
+  color: var(--accent-text-soft);
+  font-weight: var(--fw-semibold);
+}
+
+/* 防御：AI 判题面板（.ai__md）落在 code 材质里，不要带上阅读区 h2 的书脊竖线。
+   样式主体在 lab.css，这里只把会漏过去的两个属性归零。 */
+.ai__md .prose h2 {
+  padding-left: 0;
+  border-left: none;
+}
+
+/* ==========================================================================
+   highlight.js —— 用第 3.6 节的语法色，不保留第三方主题的原始紫/绿
+   ========================================================================== */
+
+.hljs {
+  color: var(--syn-variable);
+  background: transparent;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: var(--syn-comment);
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-type,
+.hljs-doctag {
+  color: var(--syn-keyword);
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta .hljs-string {
+  color: var(--syn-string);
+}
+
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link {
+  color: var(--syn-number);
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-title.function_,
+.hljs-function .hljs-title {
+  color: var(--syn-function);
+}
+
+.hljs-built_in,
+.hljs-class .hljs-title,
+.hljs-title.class_ {
+  color: var(--syn-type);
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-params,
+.hljs-attr {
+  color: var(--syn-variable);
+}
+
+.hljs-meta,
+.hljs-deletion {
+  color: var(--syn-operator);
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: var(--fw-semibold);
+}

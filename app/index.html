@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <!-- 应用清单：桌面版用 Chrome 的 --app 打开时，窗口图标 / 标题 / 主题色都取自这里 -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 两种模式都声明：原生滚动条 / 表单控件 / 系统 UI 会跟着 html[data-theme] 的 color-scheme 走 -->
+    <meta name="color-scheme" content="dark light" />
+    <!-- 桌面壳 / 浏览器标签栏跟着走，避免深色页面配一条白顶栏（下面脚本会按模式改写它） -->
+    <meta name="theme-color" content="#0a0c0f" />
+    <meta
+      name="description"
+      content="把 LeetCode 题库、教程与代码练习串起来的本地训练台"
+    />
+    <title>LeetCode 训练台</title>
+    <!--
+      颜色模式必须在「首屏渲染之前」定下来，否则浅色用户会先看到一帧深色再翻白。
+      这段脚本同步执行（不是 module，不等待任何资源），逻辑和 src/lib/theme.ts 一一对应：
+        lc.ui.theme = dark | light | auto（没存过 → dark，深色仍是默认）
+    -->
+    <script>
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('lc.ui.theme')
+          var mode = stored === 'light' || stored === 'auto' ? stored : 'dark'
+          var resolved =
+            mode === 'auto'
+              ? window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
+              : mode
+          var root = document.documentElement
+          root.dataset.theme = resolved
+          root.dataset.themeMode = mode
+          var meta = document.querySelector('meta[name="theme-color"]')
+          if (meta) meta.setAttribute('content', resolved === 'dark' ? '#0a0c0f' : '#f7f6f3')
+        } catch (error) {
+          document.documentElement.dataset.theme = 'dark'
+        }
+      })()
+    </script>
+    <!--
+      首屏底色写在这里：JS 与样式表加载完之前先铺上正确的底色，
+      否则会先闪一帧白底（加载 3MB 题库时尤其明显）。两种模式各一条。
+    -->
+    <style>
+      html,
+      body {
+        background: #0a0c0f;
+        color: #e9edf2;
+        margin: 0;
+      }
+      html[data-theme='light'],
+      html[data-theme='light'] body {
+        background: #f7f6f3;
+        color: #1c1b18;
+      }
+      #root {
+        min-height: 100dvh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
