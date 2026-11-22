@@ -16,7 +16,7 @@
 
 ## 跑起来
 
-**装成桌面应用**：`launcher\LeetCode训练台-安装程序.exe`，双击，装到当前用户目录，不用管理员权限。装完桌面有图标，卸载在「设置 → 应用」里。
+**装成桌面应用**：到 [Releases](https://github.com/ranranxuejie/leetcode-desk/releases/latest) 下载 `LeetCode-Desk-Setup-1.0.0.exe`（45MB），双击安装。装到当前用户目录，不用管理员权限，装完桌面有图标，卸载在「设置 → 应用」里，进度会保留。
 
 **或者浏览器里跑**：
 
