@@ -1,4 +1,4 @@
-﻿# 发布到 GitHub（一键）
+# 发布到 GitHub（一键）
 #
 # 先决条件（二选一）：
 #   A. 已安装 GitHub CLI 并登录：  gh auth login
@@ -74,7 +74,9 @@ try {
     $remote = git remote get-url origin 2>$null
     if (-not $remote) { git remote add origin "https://github.com/$owner/$Repo.git" }
     git branch -M main 2>$null
-    git push -u origin main
+    # 这台机器上 git 走代理时，默认 HTTP/2 + openssl 会被中途重置；
+    # 实测 protocol v0 + schannel 才稳（连几百字节的小分支也会被重置，所以不是体积问题）
+    git -c protocol.version=0 -c http.sslBackend=schannel push -u origin main
 
     Write-Host ''
     Write-Host ("完成：https://github.com/" + $owner + "/" + $Repo) -ForegroundColor Green
