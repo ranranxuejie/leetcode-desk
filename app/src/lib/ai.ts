@@ -24,6 +24,8 @@ export interface AiSession {
   /** 追问对话，只保留最近几条，保证"短对话" */
   chat: AiTurn[]
   verdict: Verdict
+  /** 整体逻辑分 0-10（AI 给的），null = 还没判 / 解析不出来 */
+  score: number | null
   busy: boolean
   streaming: string
   error: string | null
@@ -35,6 +37,7 @@ const EMPTY: AiSession = {
   codeMessage: null,
   chat: [],
   verdict: null,
+  score: null,
   busy: false,
   streaming: '',
   error: null,
@@ -168,14 +171,38 @@ function buildSystemPrompt(problem: Problem, run: RunSummary | null): string {
     '3. 判"通过"要同时满足：逻辑正确、边界正确（空输入、单元素、重复元素、极值）、时间复杂度可接受。',
     '4. 判"有错误"必须给出一个能让它出错的具体输入，并写出这段代码实际输出什么、正确答案是什么。',
     '5. 有语法错误就指出哪一行、错在哪。',
-    '6. 不要重写整份代码交差；只讲错在哪、为什么错、怎么改。',
+    '6. 【结论】必须和【判定】一致；两者冲突时以更保守的那个为准（宁可判不通过，也别放过真错误）。',
+    '7. 拿不准的边界情况不要硬判通过 —— 判错的代价比多问一句大得多。',
     '',
-    '## 输出格式（严格照抄这五段标题，不要加别的内容）',
+    '## 输出格式（严格照抄这七段标题，顺序不能变，不要加别的内容）',
     '【判定】✅ 通过 或 ❌ 有错误 或 ⚠️ 无法确定（后面跟一句话理由）',
+    '【评分】X/10 —— 整体逻辑分。10=可以直接交；7-9=思路对、只有小瑕疵；4-6=方向对但实现有错；1-3=基本不成立；0=跑不起来',
     '【问题定位】第 N 行：……（判定通过就写"无"）',
     '【实际会发生什么】拿一个具体输入走一遍，说清它输出什么、为什么错',
-    '【正确写法】给关键代码片段（5-20 行），并一句话说明思路',
+    '【修改后的代码】见下面两条规则（**这一段是重点，用户靠它定位错误**）',
     '【复杂度】时间 O(?) 空间 O(?)',
+    '【结论】最后一行，只写 ✅ 通过 或 ❌ 不通过（必须和【判定】一致；不确定就写 ❌ 不通过）',
+    '',
+    '## 【修改后的代码】怎么写（三条规则，按情况选一条）',
+    'A. 代码有可取之处、只是局部有问题（评分 ≥ 4）→ **在原代码结构和变量名的基础上改**，不要另起炉灶：',
+    '   - 保留用户的方法名、参数名、主要变量名、整体流程；',
+    '   - 每一处改动/新增，在**那一行末尾**加注释，格式固定为：# ← 改这里：原来是什么 → 现在为什么（新增的行写 # ← 新增：为什么）；',
+    '   - 没改的行原样保留，不要顺手重排格式；',
+    '   - 输出完整可运行的方法（不要省略号、不要"其余不变"）。',
+    'B. 代码基本不成立（评分 ≤ 3）→ 给一份**最小可运行**的正确实现，同样在关键行加 # ← 注释说明思路。',
+    'C. 判定通过 → 这一段只写一个字：无',
+    '',
+    '示例（只演示注释格式，不要照抄内容）：',
+    '`python',
+    'class Solution:',
+    '    def twoSum(self, nums: List[int], target: int) -> List[int]:',
+    '        seen = {}',
+    '        for i, x in enumerate(nums):',
+    '            if target - x in seen:',
+    '                return [seen[target - x], i]',
+    '            seen[x] = i  # ← 改这里：原来写在 if 之前 → 会把自己和自己配对（x=3,target=6 时返回 [0,0]）',
+    '        return []',
+    '`',
   )
   return lines.join('\n')
 }
@@ -266,13 +293,29 @@ async function streamChat(
 }
 
 function parseVerdict(text: string): Verdict {
+  // 先看文末的【结论】：那是最终裁决，比开头的【判定】更可信
+  const conclusion = text.match(/【结论】[^\n]*/)?.[0] ?? ''
+  if (conclusion) {
+    if (/✅|通过/.test(conclusion) && !/不通过/.test(conclusion)) return 'pass'
+    if (/❌|不通过/.test(conclusion)) return 'fail'
+  }
   const head = text.slice(0, 400)
   if (/【判定】[^\n]*✅/.test(head)) return 'pass'
   if (/【判定】[^\n]*❌/.test(head)) return 'fail'
   if (/【判定】[^\n]*⚠/.test(head)) return 'unknown'
+  // 兜底：全文里出现 ✅ 优先当通过，但「不通过」不能误判成通过
+  if (/❌|不通过/.test(text)) return 'fail'
   if (text.includes('✅')) return 'pass'
-  if (text.includes('❌')) return 'fail'
   return null
+}
+
+/** 从【评分】里抽 0-10 的整数；抽不到返回 null */
+function parseScore(text: string): number | null {
+  const match = text.match(/【评分】[^\n]*?(\d{1,2})\s*(?:\/\s*10|分)/)
+  if (!match) return null
+  const value = Number(match[1])
+  if (!Number.isFinite(value)) return null
+  return Math.max(0, Math.min(10, value))
 }
 
 // ---------------------------------------------------------------- 对外动作
@@ -311,6 +354,7 @@ export async function reviewCode(
       busy: false,
       streaming: '',
       verdict: parseVerdict(text),
+      score: parseScore(text),
       chat: [{ role: 'assistant', content: text }],
     })
   } catch (err) {
@@ -339,7 +383,10 @@ export async function askFollowUp(problem: Problem, question: string): Promise<v
       busy: false,
       streaming: '',
       chat: nextChat,
-      verdict: parseVerdict(chat.filter((t) => t.role === 'assistant').map((t) => t.content).join('\n') + text) ?? snapshot(no).verdict,
+      verdict:
+        parseVerdict(chat.filter((t) => t.role === 'assistant').map((t) => t.content).join('\n') + text) ??
+        snapshot(no).verdict,
+      score: parseScore(text) ?? snapshot(no).score,
     })
   } catch (err) {
     if ((err as Error).name === 'AbortError') return

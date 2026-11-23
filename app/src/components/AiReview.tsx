@@ -66,6 +66,14 @@ export function AiReview({
         <span className={`ai__verdict ai__verdict--${session.verdict ?? 'none'}`}>
           {busy ? 'AI 正在读代码…' : session.verdict ? VERDICT_TEXT[session.verdict] : '还没判过'}
         </span>
+        {session.score != null && !busy ? (
+          <span
+            className={`ai__score ai__score--${session.score >= 8 ? 'high' : session.score >= 4 ? 'mid' : 'low'}`}
+            title="整体逻辑分（AI 给的 0-10 分）"
+          >
+            {session.score}/10
+          </span>
+        ) : null}
         {stale && !busy ? (
           <span className="ai__stale" title="代码改过了，判定结果是旧的">
             代码已修改

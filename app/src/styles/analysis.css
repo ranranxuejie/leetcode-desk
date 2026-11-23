@@ -836,3 +836,34 @@
 .an__teach-body blockquote {
   margin: 0 0 1.2em;
 }
+
+/* AI 判题的整体逻辑分（0-10）：和判定徽标并排，按分段变色 */
+.ai__score {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px var(--sp-2);
+  border-radius: var(--r-pill);
+  font-family: var(--font-data);
+  font-size: var(--fs-xs);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.ai__score--high {
+  color: var(--success-text);
+  border-color: var(--success-line);
+  background: var(--success-wash);
+}
+
+.ai__score--mid {
+  color: var(--accent-text);
+  border-color: var(--accent-line);
+  background: var(--accent-wash);
+}
+
+.ai__score--low {
+  color: var(--danger-text);
+  border-color: var(--danger-line);
+  background: var(--danger-wash);
+}
